@@ -3,9 +3,7 @@ package controller
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/frame/g"
-
-	"gf2-api/api/v1"
+	v1 "gf2-api/api/v1"
 )
 
 var (
@@ -15,6 +13,7 @@ var (
 type cHello struct{}
 
 func (c *cHello) Hello(ctx context.Context, req *v1.HelloReq) (res *v1.HelloRes, err error) {
-	g.RequestFromCtx(ctx).Response.Writeln("Hello World!")
+	res = &v1.HelloRes{Name: "World"}
+
 	return
 }

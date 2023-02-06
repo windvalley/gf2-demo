@@ -1,9 +1,10 @@
 package main
 
 import (
-	_ "gf2-api/internal/packed"
-
 	"github.com/gogf/gf/v2/os/gctx"
+
+	_ "gf2-api/internal/logic"
+	_ "gf2-api/internal/packed"
 
 	"gf2-api/internal/cmd"
 )
