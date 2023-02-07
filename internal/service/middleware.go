@@ -11,7 +11,9 @@ import (
 
 type (
 	IMiddleware interface {
+		AccessUser(r *ghttp.Request)
 		ResponseHandler(r *ghttp.Request)
+		TraceID(r *ghttp.Request)
 	}
 )
 

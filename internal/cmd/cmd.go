@@ -36,6 +36,8 @@ var (
 
 			s := g.Server()
 			s.Use(
+				service.Middleware().TraceID,
+				service.Middleware().AccessUser,
 				service.Middleware().ResponseHandler,
 			)
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
