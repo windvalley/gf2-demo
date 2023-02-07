@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gogf/gf/v2/net/ghttp"
 
-	"gf2-api/internal/consts"
+	"gf2-demo/internal/consts"
 )
 
 // AccessUser set access user and mail to Context.

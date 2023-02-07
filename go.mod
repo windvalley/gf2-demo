@@ -1,4 +1,4 @@
-module gf2-api
+module gf2-demo
 
 go 1.15
 

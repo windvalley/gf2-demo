@@ -8,7 +8,7 @@ import (
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gvalid"
 
-	"gf2-api/internal/codes"
+	"gf2-demo/internal/codes"
 )
 
 // ResponseHandler custom response format

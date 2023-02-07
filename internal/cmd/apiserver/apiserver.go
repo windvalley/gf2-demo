@@ -1,4 +1,4 @@
-package cmd
+package apiserver
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 	"github.com/gogf/gf/v2/os/genv"
 	"github.com/gogf/gf/v2/os/glog"
 
-	"gf2-api/internal/controller"
-	"gf2-api/internal/service"
+	"gf2-demo/internal/controller"
+	"gf2-demo/internal/service"
 )
 
 var (

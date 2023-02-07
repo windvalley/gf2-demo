@@ -5,5 +5,5 @@
 package logic
 
 import (
-	_ "gf2-api/internal/logic/middleware"
+	_ "gf2-demo/internal/logic/middleware"
 )

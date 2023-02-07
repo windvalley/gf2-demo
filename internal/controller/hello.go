@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	v1 "gf2-api/api/v1"
+	v1 "gf2-demo/api/v1"
 )
 
 var (

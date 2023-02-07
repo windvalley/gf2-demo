@@ -5,7 +5,7 @@ import (
 
 	"github.com/gogf/gf/v2/frame/g"
 
-	"gf2-api/internal/consts"
+	"gf2-demo/internal/consts"
 )
 
 func GetAccessUser(ctx context.Context) string {
