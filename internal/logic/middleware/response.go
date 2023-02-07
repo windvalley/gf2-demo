@@ -54,7 +54,7 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 			code := gerror.Code(err)
 			bizCode, ok = code.(codes.BizCode) // custom error codes
 			if !ok {
-				err = gerror.WrapCode(codes.CodeInternal, err) // internal error
+				err = gerror.NewCode(codes.CodeInternal) // internal error
 				code1 := gerror.Code(err)
 				bizCode, _ = code1.(codes.BizCode)
 			}

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 
 	v1 "gf2-api/api/v1"
 )
@@ -13,7 +14,11 @@ var (
 type cHello struct{}
 
 func (c *cHello) Hello(ctx context.Context, req *v1.HelloReq) (res *v1.HelloRes, err error) {
-	res = &v1.HelloRes{Name: "World"}
+	// res = &v1.HelloRes{Name: "World"}
+
+	err = errors.New("some error")
+
+	// panic("failed")
 
 	return
 }
