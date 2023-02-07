@@ -12,11 +12,11 @@ server:
   swaggerPath: "/swagger"
 
   # 平滑重启
-  graceful: true # 是否开启平滑重启特性，开启时将会在本地增加10000的本地TCP端口用于进程间通信。默认false. 平滑重启: kill -SIGUSR1 进程ID
+  graceful: false # 是否开启平滑重启特性，开启时将会在本地增加10000的本地TCP端口用于进程间通信。默认false. 平滑重启: kill -SIGUSR1 进程ID
   gracefulTimeout: 10 # 父进程在平滑重启后多少秒退出，默认2秒。若请求耗时大于该值, 可能会导致请求中断
 
   # PProf配置
-  pprofEnabled: true # 是否开启PProf性能调试特性。默认为false
+  pprofEnabled: false # 是否开启PProf性能调试特性。默认为false
   pprofPattern: "" # 开启PProf时有效，表示PProf特性的页面访问路径，对当前Server绑定的所有域名有效。默认值: /debug/pprof
 
   # 服务日志(包括访问日志和server错误日志)
