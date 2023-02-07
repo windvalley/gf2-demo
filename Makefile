@@ -1,7 +1,15 @@
 ROOT_DIR    = $(shell pwd)
 NAMESPACE   = "default"
-DEPLOY_NAME = "template-single"
-DOCKER_NAME = "template-single"
+DEPLOY_NAME = "gf2-demo-api"
+DOCKER_NAME = "gf2-demo-api"
+
+SED = gsed
+
+APISERVER_CMD = cmd/gf2-demo-api/gf2-demo-api.go
+JOB_CMD = cmd/gf2-demo-job/gf2-demo-job.go
+
+VERSION = $(shell git describe --tags --always --match='v*')
+
 
 # Install/Update to the latest CLI tool.
 .PHONY: cli
@@ -22,16 +30,37 @@ cli.install:
 		make cli; \
 	fi;
 
-
 # Generate Go files for DAO/DO/Entity.
 .PHONY: dao
 dao: cli.install
+	@echo "******** gf gen dao ********"
 	@gf gen dao
 
 # Generate Go files for Service.
 .PHONY: service
 service: cli.install
+	@echo "******** gf gen service ********"
 	@gf gen service
+
+# Run apiserver for development environment.
+.PHONY: run
+run: cli.install dao service
+	@echo "******** gf run ${APISERVER_CMD} ********"
+	@gf run ${APISERVER_CMD}
+
+# Build apiserver binary.
+.PHONY: build
+build: cli.install dao service
+	@echo "******** gf build ${APISERVER_CMD} ********"
+	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
+	@gf build ${APISERVER_CMD}
+
+# Build cronjob binary.
+.PHONY: build.job
+build.job: cli.install dao service
+	@echo "******** gf build ${JOB_CMD} ********"
+	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
+	@gf build ${JOB_CMD}
 
 # Build image, deploy image and yaml to current kubectl environment and make port forward to local machine.
 .PHONY: start
