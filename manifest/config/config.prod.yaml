@@ -1,5 +1,5 @@
 server:
-  address: ":9000"
+  address: ":9002"
   keepAlive: true # 是否开启Keep-Alive功能。默认true
   idleTimeout: "60s" # 仅当Keep-Alive开启时有效，请求闲置时间。默认为60秒
   maxHeaderBytes: "10240" # 请求Header大小限制（Byte）。默认为10KB
@@ -52,7 +52,7 @@ logger:
   rotateCheckInterval: "1h" # 滚动切分的时间检测间隔，一般不需要设置。默认为1小时
   format: "" # "json" or other, 也对server服务日志生效
 
-  # 为子项目gf2-demo-job配置独立的logger
+  # 为子项目cronjob配置独立的logger
   cronjob:
     path: "logs/"
     file: "cronjob_{Y-m-d}.log"
@@ -65,4 +65,4 @@ logger:
     rotateBackupExpire: "30d"
     rotateBackupLimit: 30
     rotateCheckInterval: "1h"
-    format: ""
+    format: "json"

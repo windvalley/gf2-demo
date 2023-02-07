@@ -7,7 +7,6 @@ import (
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcmd"
-	"github.com/gogf/gf/v2/os/genv"
 	"github.com/gogf/gf/v2/os/glog"
 
 	"gf2-demo/utility"
@@ -18,7 +17,18 @@ var (
 		Name:        "gf2-demo-job",
 		Brief:       "",
 		Description: "",
-		Usage:       "",
+		Usage: `Dev:
+		./gf2-demo-job
+
+	Test:
+		./gf2-demo-job --gf.gcfg.file=config.test.yaml
+		or 
+		export GF_GCFG_FILE=config.test.yaml && ./gf2-demo-job
+
+	Prod:
+		./gf2-demo-job --gf.gcfg.file=config.prod.yaml
+		or 
+		export GF_GCFG_FILE=config.prod.yaml && ./gf2-demo-job`,
 		Arguments: []gcmd.Argument{
 			{
 				Name:   "version",
@@ -45,10 +55,6 @@ var (
 
 			// 显示打印错误的文件行号
 			g.Log().SetFlags(glog.F_TIME_STD | glog.F_FILE_LONG)
-
-			// 查看简化报错堆栈环境变量的值
-			envGfGerrorBrief := genv.Get("GF_GERROR_BRIEF")
-			g.Log().Debugf(ctx, "GF_GERROR_BRIEF=%s", envGfGerrorBrief)
 
 			// 查看使用的配置文件是哪个
 			configFile := g.Cfg().GetAdapter()

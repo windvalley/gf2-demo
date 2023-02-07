@@ -20,7 +20,18 @@ var (
 		Name:        "gf2-demo-api",
 		Brief:       "An API Server Demo",
 		Description: "An API server demo using GoFrame V2",
-		Usage:       "gf run cmd/gf2-demo-api/gf2-demo-api.go",
+		Usage: `Dev:
+		./gf2-demo-api
+
+	Test:
+		./gf2-demo-api --gf.gcfg.file=config.test.yaml --gf.gerror.brief=true
+		or 
+		export GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true && ./gf2-demo-api
+
+	Prod:
+		./gf2-demo-api --gf.gcfg.file=config.prod.yaml --gf.gerror.brief=true
+		or 
+		export GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true && ./gf2-demo-api`,
 		Arguments: []gcmd.Argument{
 			{
 				Name:   "version",
