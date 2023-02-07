@@ -48,6 +48,12 @@ run: cli.install dao service
 	@echo "******** gf run ${APISERVER_CMD} ********"
 	@gf run ${APISERVER_CMD}
 
+# Run cronjob for development environment.
+.PHONY: run.job
+run.job: cli.install dao service
+	@echo "******** gf run ${JOB_CMD} ********"
+	@gf run ${JOB_CMD}
+
 # Build apiserver binary.
 .PHONY: build
 build: cli.install dao service
