@@ -26,12 +26,12 @@ var (
 				./gf2-demo-api
 
 			Test:
-				./gf2-demo-api -c config.test.yaml --gf.gerror.brief=true
+				./gf2-demo-api -c config.test.yaml
 				or 
 				GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
 
 			Prod:
-				./gf2-demo-api -c config.prod.yaml --gf.gerror.brief=true
+				./gf2-demo-api -c config.prod.yaml
 				or 
 				GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api`,
 		Additional: "Find more information at: https://github.com/windvalley/gf2-demo",

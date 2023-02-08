@@ -1,4 +1,4 @@
-package cronjob
+package cli
 
 import (
 	"context"
@@ -15,23 +15,23 @@ import (
 
 var (
 	Main = gcmd.Command{
-		Name:        "gf2-demo-job",
-		Brief:       "",
-		Description: "",
-		Usage:       "gf2-demo-job [OPTION]",
+		Name:        "gf2-demo-cli",
+		Brief:       "A command-line tool demo",
+		Description: "A command-line tool demo using GoFrame V2",
+		Usage:       "gf2-demo-cli [OPTION]",
 		Examples: `
 			Dev:
-				./gf2-demo-job
+				./gf2-demo-cli
 
 			Test:
-				./gf2-demo-job -c config.test.yaml
+				./gf2-demo-cli -c config.test.yaml
 				or 
-				GF_GCFG_FILE=config.test.yaml ./gf2-demo-job
+				GF_GCFG_FILE=config.test.yaml ./gf2-demo-cli
 
 			Prod:
-				./gf2-demo-job -c config.prod.yaml
+				./gf2-demo-cli -c config.prod.yaml
 				or 
-				GF_GCFG_FILE=config.prod.yaml ./gf2-demo-job`,
+				GF_GCFG_FILE=config.prod.yaml ./gf2-demo-cli`,
 		Additional: "Find more information at: https://github.com/windvalley/gf2-demo",
 		Arguments: []gcmd.Argument{
 			{
@@ -62,7 +62,7 @@ var (
 			}
 
 			// json格式日志
-			logFormat, err := g.Cfg().Get(ctx, "logger.cronjob.format")
+			logFormat, err := g.Cfg().Get(ctx, "logger.cli.format")
 			if err == nil {
 				if logFormat.String() == "json" {
 					glog.SetDefaultHandler(glog.HandlerJson)
@@ -78,11 +78,11 @@ var (
 
 			// ****************** 以下部分为业务逻辑
 
-			fmt.Printf("gf2-demo-job\n")
+			fmt.Printf("gf2-demo-cli\n")
 
-			g.Log("cronjob").Info(ctx, "foo")
+			g.Log("cli").Info(ctx, "foo")
 
-			g.Log("cronjob").Error(ctx, errors.New("bar"))
+			g.Log("cli").Error(ctx, errors.New("bar"))
 
 			return
 		},

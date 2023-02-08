@@ -10,7 +10,7 @@
 - 多环境配置: 开发环境、测试环境、生产环境
 - 可输出二进制文件的版本信息
 - 链路跟踪中间件, 默认使用客户端按规范传递的`X-Request-Id`
-- 通过 Makefile 管理项目: `make run`, `make run.job`, `make build`, `make build.job` 等
+- 通过 Makefile 管理项目: `make run`, `make run.cli`, `make build`, `make build.cli` 等
 
 ## 🚀 Quick Start
 
@@ -38,7 +38,11 @@ make cli
 代码有变动准实时生效.
 
 ```sh
+# 运行 gf2-demo-api
 make run
+
+# 运行 gf2-demo-cli
+make run.cli
 ```
 
 ### 测试或生产环境
@@ -51,7 +55,11 @@ make run
 #### 编译
 
 ```sh
+# 编译 gf2-demo-api
 make build
+
+# 编译 gf2-demo-cli
+make build.cli
 ```
 
 会生成如下二进制文件:
@@ -60,8 +68,10 @@ make build
 bin
 ├── darwin_amd64
 │   └── gf2-demo-api
+│   └── gf2-demo-cli
 └── linux_amd64
     └── gf2-demo-api
+    └── gf2-demo-cli
 ```
 
 #### 运行
@@ -72,9 +82,9 @@ bin
 cd bin/darwin_amd64/
 
 # 测试
-./gf2-demo-api --gf.gcfg.file=config.test.yaml --gf.gerror.brief=true
+./gf2-demo-api -c config.test.yaml
 # 生产
-./gf2-demo-api --gf.gcfg.file=config.prod.yaml --gf.gerror.brief=true
+./gf2-demo-api -c config.prod.yaml
 ```
 
 - 通过环境变量指定配置文件
@@ -83,17 +93,17 @@ cd bin/darwin_amd64/
 cd bin/darwin_amd64/
 
 # 测试
-export GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true && ./gf2-demo-api
+GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
 # 生产
-export GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true && ./gf2-demo-api
+GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
 ```
 
 > NOTE:
 >
 > - 通过命令行参数指定配置文件优先于环境变量.
-> - 直接运行 `./gf2-demo-api` 将默认使用 config.yaml 配置文件.
-> - `--gf.gerror.brief=true/GF_GERROR_BRIEF=true` 表示服务日志错误堆栈不包含 gf 框架内部的代码.
-> - 配置文件在通过 `make build` 编译时已经打包到二进制文件中, 所以在部署时只需部署二进制文件即可.
+> - 直接运行 `./gf2-demo-api` 或 `./gf2-demo-cli` 将默认使用 `config.yaml` 配置文件.
+> - `GF_GERROR_BRIEF=true` 表示 HTTP 服务日志错误堆栈中不包含 gf 框架堆栈.
+> - 配置文件在通过 `make build` 或 `make build.cli` 编译时已经打包到二进制文件中, 所以在部署时只需部署二进制文件即可.
 
 ## 📄 Documentation
 

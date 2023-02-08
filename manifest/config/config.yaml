@@ -52,10 +52,10 @@ logger:
   rotateCheckInterval: "1h" # 滚动切分的时间检测间隔，一般不需要设置。默认为1小时
   format: "" # "json" or other, 也对server服务日志生效
 
-  # 为子项目gf2-demo-job配置独立的logger
-  cronjob:
+  # 为子项目gf2-demo-cli配置独立的logger
+  cli:
     path: "logs/"
-    file: "cronjob_{Y-m-d}.log"
+    file: "cli_{Y-m-d}.log"
     level: "all"
     stStatus: 1
     stdout: true

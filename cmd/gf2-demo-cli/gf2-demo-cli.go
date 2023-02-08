@@ -6,9 +6,9 @@ import (
 	_ "gf2-demo/internal/logic"
 	_ "gf2-demo/internal/packed"
 
-	"gf2-demo/internal/cmd/cronjob"
+	"gf2-demo/internal/cmd/cli"
 )
 
 func main() {
-	cronjob.Main.Run(gctx.New())
+	cli.Main.Run(gctx.New())
 }

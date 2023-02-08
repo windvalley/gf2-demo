@@ -6,7 +6,7 @@ DOCKER_NAME = "gf2-demo-api"
 SED = gsed
 
 APISERVER_CMD = cmd/gf2-demo-api/gf2-demo-api.go
-JOB_CMD = cmd/gf2-demo-job/gf2-demo-job.go
+CLI_CMD = cmd/gf2-demo-cli/gf2-demo-cli.go
 
 VERSION = $(shell git describe --tags --always --match='v*')
 
@@ -34,7 +34,7 @@ cli.install:
 .PHONY: dao
 dao: cli.install
 	@echo "******** gf gen dao ********"
-	@gf gen dao
+	@GF_GCFG_FILE=config.yaml gf gen dao
 
 # Generate Go files for Service.
 .PHONY: service
@@ -48,11 +48,11 @@ run: cli.install dao service
 	@echo "******** gf run ${APISERVER_CMD} ********"
 	@gf run ${APISERVER_CMD}
 
-# Run cronjob for development environment.
-.PHONY: run.job
-run.job: cli.install dao service
-	@echo "******** gf run ${JOB_CMD} ********"
-	@gf run ${JOB_CMD}
+# Run cli for development environment.
+.PHONY: run.cli
+run.cli: cli.install dao service
+	@echo "******** gf run ${CLI_CMD} ********"
+	@gf run ${CLI_CMD}
 
 # Build apiserver binary.
 .PHONY: build
@@ -61,12 +61,12 @@ build: cli.install dao service
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@gf build ${APISERVER_CMD}
 
-# Build cronjob binary.
-.PHONY: build.job
-build.job: cli.install dao service
-	@echo "******** gf build ${JOB_CMD} ********"
+# Build cli binary.
+.PHONY: build.cli
+build.cli: cli.install dao service
+	@echo "******** gf build ${CLI_CMD} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@gf build ${JOB_CMD}
+	@gf build ${CLI_CMD}
 
 # Build image, deploy image and yaml to current kubectl environment and make port forward to local machine.
 .PHONY: start

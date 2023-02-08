@@ -19,5 +19,4 @@ output/
 manifest/output/
 temp/
 logs/
-/gf2-demo-api
-/gf2-demo-job
+/gf2-demo-*
