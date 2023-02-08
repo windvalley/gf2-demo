@@ -70,11 +70,11 @@ var (
 			}
 
 			// 显示打印错误的文件行号
-			g.Log().SetFlags(glog.F_TIME_STD | glog.F_FILE_LONG)
+			g.Log("cli").SetFlags(glog.F_TIME_STD | glog.F_FILE_LONG)
 
 			// 查看使用的配置文件是哪个
 			configFile := g.Cfg().GetAdapter()
-			g.Log().Debugf(ctx, "use config file: %+v", configFile)
+			g.Log("cli").Debugf(ctx, "use config file: %+v", configFile)
 
 			// ****************** 以下部分为业务逻辑
 
