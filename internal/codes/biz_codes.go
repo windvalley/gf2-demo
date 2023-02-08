@@ -3,7 +3,6 @@ package codes
 //  http status, bisiness codes, message
 var (
 	CodeOK          = New(200, "OK", "")
-	CodeCreated     = New(201, "Created", "resource created")
 	CodePartSuccess = New(202, "PartSuccess", "part success")
 
 	CodeValidationFailed = New(400, "ValidationFailed", "validation failed")
