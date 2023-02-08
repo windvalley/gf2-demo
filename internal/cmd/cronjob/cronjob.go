@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
@@ -17,18 +18,21 @@ var (
 		Name:        "gf2-demo-job",
 		Brief:       "",
 		Description: "",
-		Usage: `Dev:
-		./gf2-demo-job
+		Usage:       "gf2-demo-job [OPTION]",
+		Examples: `
+			Dev:
+				./gf2-demo-job
 
-	Test:
-		./gf2-demo-job --gf.gcfg.file=config.test.yaml
-		or 
-		export GF_GCFG_FILE=config.test.yaml && ./gf2-demo-job
+			Test:
+				./gf2-demo-job -c config.test.yaml
+				or 
+				GF_GCFG_FILE=config.test.yaml ./gf2-demo-job
 
-	Prod:
-		./gf2-demo-job --gf.gcfg.file=config.prod.yaml
-		or 
-		export GF_GCFG_FILE=config.prod.yaml && ./gf2-demo-job`,
+			Prod:
+				./gf2-demo-job -c config.prod.yaml
+				or 
+				GF_GCFG_FILE=config.prod.yaml ./gf2-demo-job`,
+		Additional: "Find more information at: https://github.com/windvalley/gf2-demo",
 		Arguments: []gcmd.Argument{
 			{
 				Name:   "version",
@@ -37,12 +41,24 @@ var (
 				IsArg:  false,
 				Orphan: true,
 			},
+			{
+				Name:   "config",
+				Short:  "c",
+				Brief:  "config file (default config.yaml)",
+				IsArg:  false,
+				Orphan: false,
+			},
 		},
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			ver := parser.GetOpt("version")
 			if ver != nil {
 				utility.PrintVersionInfo()
 				return
+			}
+
+			config := parser.GetOpt("config").String()
+			if config != "" {
+				g.Cfg().GetAdapter().(*gcfg.AdapterFile).SetFileName(config)
 			}
 
 			// json格式日志

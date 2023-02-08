@@ -5,6 +5,7 @@ import (
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
@@ -19,18 +20,21 @@ var (
 		Name:        "gf2-demo-api",
 		Brief:       "An API Server Demo",
 		Description: "An API server demo using GoFrame V2",
-		Usage: `Dev:
-		./gf2-demo-api
+		Usage:       "gf2-demo-api [OPTION]",
+		Examples: `
+			Dev:
+				./gf2-demo-api
 
-	Test:
-		./gf2-demo-api --gf.gcfg.file=config.test.yaml --gf.gerror.brief=true
-		or 
-		export GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true && ./gf2-demo-api
+			Test:
+				./gf2-demo-api -c config.test.yaml --gf.gerror.brief=true
+				or 
+				GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
 
-	Prod:
-		./gf2-demo-api --gf.gcfg.file=config.prod.yaml --gf.gerror.brief=true
-		or 
-		export GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true && ./gf2-demo-api`,
+			Prod:
+				./gf2-demo-api -c config.prod.yaml --gf.gerror.brief=true
+				or 
+				GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api`,
+		Additional: "Find more information at: https://github.com/windvalley/gf2-demo",
 		Arguments: []gcmd.Argument{
 			{
 				Name:   "version",
@@ -39,6 +43,13 @@ var (
 				IsArg:  false,
 				Orphan: true,
 			},
+			{
+				Name:   "config",
+				Short:  "c",
+				Brief:  "config file (default config.yaml)",
+				IsArg:  false,
+				Orphan: false,
+			},
 		},
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			// 判断不带数据的选项是否存在时，可以通过GetOpt(name) != nil方式
@@ -46,6 +57,11 @@ var (
 			if ver != nil {
 				utility.PrintVersionInfo()
 				return
+			}
+
+			config := parser.GetOpt("config").String()
+			if config != "" {
+				g.Cfg().GetAdapter().(*gcfg.AdapterFile).SetFileName(config)
 			}
 
 			// json格式日志
