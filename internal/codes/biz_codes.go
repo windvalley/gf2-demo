@@ -1,6 +1,6 @@
 package codes
 
-//  http status, bisiness codes, message
+//  http status, bisiness code, message
 var (
 	CodeOK          = New(200, "OK", "")
 	CodePartSuccess = New(202, "PartSuccess", "part success")
