@@ -1,13 +1,13 @@
 # gf2-demo
 
-`gf2-demo` 是一个基于 [GoFrameV2](https://github.com/gogf/gf) 快速开发后端服务的脚手架, 目标使开发者只需关注业务逻辑的编写, 快速交付项目.
+`gf2-demo` 是一个基于 [GoFrameV2](https://github.com/gogf/gf) 用来快速开发后端服务的脚手架, 目标使开发者只需关注业务逻辑的编写, 快速且规范地交付项目.
 
 ## 💌 Features
 
 - 优化工程目录结构, 使支持多个可执行命令
 - 规范业务错误码, 中间件统一拦截响应, 规范响应格式
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、开发者打印的日志、其他可执行命令的日志配置
-- 多环境配置: 开发环境、测试环境、生产环境
+- 多环境管理: 开发环境、测试环境、生产环境
 - 项目的二进制文件可打印当前版本信息
 - 链路跟踪中间件, 默认使用客户端按规范传递的`X-Request-Id`
 - 通过 Makefile 管理项目: `make run`, `make run.cli`, `make build`, `make build.cli` 等
@@ -27,17 +27,11 @@ cd gf2-demo
 make cli
 ```
 
-### 开发环境
-
-#### 配置文件
-
-`manifest/config/config.yaml`
-
-#### 运行
-
-代码有变动准实时生效.
+### 热更新(Live reload)
 
 ```sh
+cd gf2-demo
+
 # 运行 gf2-demo-api
 make run
 
@@ -45,16 +39,13 @@ make run
 make run.cli
 ```
 
-### 测试或生产环境
+> 默认加载配置文件: `manifest/config/config.yaml`
 
-#### 配置文件
-
-- 测试环境: `manifest/config/config.test.yaml`
-- 生产环境: `manifest/config/config.prod.yaml`
-
-#### 编译
+### 编译二进制文件
 
 ```sh
+cd gf2-demo
+
 # 编译 gf2-demo-api
 make build
 
@@ -74,42 +65,47 @@ bin
     └── gf2-demo-cli
 ```
 
-#### 运行
-
-运行 `gf2-demo-api` 和 `gf2-demo-cli` 类似, 下面以 `gf2-demo-api` 为例说明.
-
-- 通过命令行参数指定配置文件
+### 打印帮助信息
 
 ```sh
-cd bin/darwin_amd64/
+$ bin/darwin_amd64/gf2-demo-api -h
 
-# 测试
-./gf2-demo-api -c config.test.yaml
-# 生产
-./gf2-demo-api -c config.prod.yaml
+USAGE
+    gf2-demo-api [OPTION]
+
+OPTION
+    -v, --version   print version info
+    -c, --config    config file (default config.yaml)
+    -h, --help      more information about this command
+
+EXAMPLE
+    Dev:
+    ./gf2-demo-api
+    Test:
+    ./gf2-demo-api -c config.test.yaml
+    or
+    GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
+    Prod:
+    ./gf2-demo-api -c config.prod.yaml
+    or
+    GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
+
+DESCRIPTION
+    An API server demo using GoFrame V2
+
+Find more information at: https://github.com/windvalley/gf2-demo
 ```
-
-- 通过环境变量指定配置文件
-
-```sh
-cd bin/darwin_amd64/
-
-# 测试
-GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
-# 生产
-GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
-```
-
-> NOTE:
->
-> - 通过命令行参数指定配置文件优先于环境变量.
-> - 直接运行 `./gf2-demo-api` 或 `./gf2-demo-cli` 将默认使用 `config.yaml` 配置文件.
-> - `GF_GERROR_BRIEF=true` 表示 HTTP 服务日志错误堆栈中不包含 gf 框架堆栈.
-> - 配置文件在通过 `make build` 或 `make build.cli` 编译时已经打包到二进制文件中, 所以在部署时只需部署二进制文件即可.
 
 ## 📄 Documentation
 
 - [工程目录](#工程目录)
+- [环境管理](#环境管理)
+  - [开发环境](#开发环境)
+  - [测试环境](#测试环境)
+  - [生产环境](#生产环境)
+- [多命令管理](#多命令管理)
+  - [目录设计](#目录设计)
+  - [配置文件](#配置文件)
 - [错误码管理](#错误码管理)
   - [规范制定](#规范制定)
   - [维护业务错误码](#维护业务错误码)
@@ -117,7 +113,7 @@ GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
 - [日志管理](#日志管理)
   - [HTTP 服务日志](#HTTP-服务日志)
     - [1. HTTP 服务日志配置](#1-HTTP-服务日志配置)
-    - [2. 测试效果](#2-测试效果)
+    - [2. 生成的日志示例](#2-生成的日志示例)
   - [开发者打印的通用日志](#开发者打印的通用日志)
     - [1. 通用日志配置](#1-通用日志配置)
     - [2. 如何打印日志](#2-如何打印日志)
@@ -132,6 +128,8 @@ GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
   - [5. 编写 service 层代码](#5-编写-service-层代码)
   - [6. 编写 controller 层代码](#6-编写-controller-层代码)
   - [7. 路由注册](#7-路由注册)
+- [项目部署](#项目部署)
+- [使用 Makefile 管理项目](#使用-Makefile-管理项目)
 
 ### 工程目录
 
@@ -214,6 +212,60 @@ GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
     ├── accessuser.go
     └── version.go
 ```
+
+### 环境管理
+
+#### 开发环境
+
+配置文件: `manifest/config/config.yaml`
+
+运行:
+
+`make run` 或 `./gf2-demo-api`
+
+> 会默认加载配置文件 config.yaml
+
+#### 测试环境
+
+配置文件: `manifest/config/config.test.yaml`
+
+运行:
+
+- 通过环境变量指定配置文件: `GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api`
+- 通过命令行参数指定配置文件: `./gf2-demo-api -c config.test.yaml`
+
+> NOTE:
+>
+> - 通过命令行参数指定配置文件优先于环境变量.
+> - `GF_GERROR_BRIEF=true` 表示 HTTP 服务日志错误堆栈中不包含 gf 框架堆栈.
+> - 配置文件在通过 `make build` 或 `make build.cli` 编译时已经打包到二进制文件中, 所以在部署时只需部署二进制文件即可.
+
+#### 生产环境
+
+配置文件: `manifest/config/config.prod.yaml`
+
+运行:
+
+同测试环境, 只不过指定的配置文件不同, 略.
+
+### 多命令管理
+
+#### 目录设计
+
+举例:
+
+命令 1: `cmd/gf2-demo-api/gf2-demo-api.go` -> `internal/cmd/apiserver/apiserver.go`
+
+命令 2: `cmd/gf2-demo-cli/gf2-demo-cli.go` -> `internal/cmd/cli/cli.go`
+
+#### 配置文件
+
+默认不同命令在相同环境下使用同一个配置文件, 比如 `gf2-demo-api` 和 `gf2-demo-cli` 在开发环境下都使用 `manifest/config/config.yaml` 作为配置文件.
+
+不过也可以使用各自独立的配置文件, 只需要在运行时通过环境变量或命令行参数指定需要使用的配置文件即可, 比如:
+
+`./gf2-demo-cli -c cli_config.yaml` 或
+`GF_GCFG_FILE=cli_config.yaml ./gf2-demo-cli`
 
 ### 错误码管理
 
@@ -340,7 +392,7 @@ server:
     rotateCheckInterval: "1h"
 ```
 
-##### 2. 测试效果
+##### 2. 生成的日志示例
 
 ```sh
 curl --location --request GET 'localhost:9000/v1/hello' \
@@ -582,6 +634,39 @@ import _ "gf2-demo/internal/logic"
 位置: `internal/cmd/apiserver/`
 
 路由分组注册, 调用 controller 层(`internal/controller/`), 对外暴露接口.
+
+### 项目部署
+
+> 参考: https://goframe.org/pages/viewpage.action?pageId=1114403
+
+### 使用 Makefile 管理项目
+
+> NOTE:
+>
+> MacOS 环境下, 需要安装 gsed 命令.
+
+```sh
+# 安装最新版gf
+make cli
+
+# 物理表有增加或表结构有更新时, 自动生成或更新数据层相关代码
+make dao
+
+# internal/logic/ 有代码变动后, 使用此命令自动生成 internal/service/ 接口代码
+make service
+
+# 开发环境热启动 gf2-demo-api
+make run
+
+# 开发环境热启动 gf2-demo-cli
+make run.cli
+
+# 编译 gf2-demo-api
+make build
+
+# 编译 gf2-demo-cli
+make build.cli
+```
 
 ## 📜 References
 
