@@ -3,13 +3,15 @@ NAMESPACE   = "default"
 DEPLOY_NAME = "gf2-demo-api"
 DOCKER_NAME = "gf2-demo-api"
 
-SED = gsed
-
 APISERVER_CMD = cmd/gf2-demo-api/gf2-demo-api.go
 CLI_CMD = cmd/gf2-demo-cli/gf2-demo-cli.go
 
 VERSION = $(shell git describe --tags --always --match='v*')
 
+SED = sed
+ifeq ($(shell uname), Darwin)
+	SED = gsed
+endif
 
 # Install/Update to the latest CLI tool.
 .PHONY: cli
