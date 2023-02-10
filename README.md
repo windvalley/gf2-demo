@@ -103,29 +103,29 @@ Find more information at: https://github.com/windvalley/gf2-demo
 
 ## 📄 Documentation
 
-- [工程目录](#工程目录)
-- [环境管理](#环境管理)
+- [工程目录](#工程目录-)
+- [环境管理](#环境管理-)
   - [开发环境](#开发环境)
   - [测试环境](#测试环境)
   - [生产环境](#生产环境)
-- [多命令管理](#多命令管理)
+- [多命令管理](#多命令管理-)
   - [目录设计](#目录设计)
   - [配置文件](#配置文件)
-- [错误码管理](#错误码管理)
+- [错误码管理](#错误码管理-)
   - [规范制定](#规范制定)
   - [维护业务错误码](#维护业务错误码)
   - [测试效果](#测试效果)
-- [日志管理](#日志管理)
+- [日志管理](#日志管理-)
   - [HTTP 服务日志](#HTTP-服务日志)
     - [1. HTTP 服务日志配置](#1-HTTP-服务日志配置)
     - [2. 生成的日志示例](#2-生成的日志示例)
   - [开发者打印的通用日志](#开发者打印的通用日志)
     - [1. 通用日志配置](#1-通用日志配置)
-    - [2. 如何打印日志](#2-如何打印日志)
+    - [2. 如何打日志](#2-如何打日志)
     - [3. 生成的日志示例](#3-生成的日志示例)
-- [链路跟踪](#链路跟踪)
-- [版本管理](#版本管理)
-- [开发流程](#开发流程)
+- [链路跟踪](#链路跟踪-)
+- [版本管理](#版本管理-)
+- [开发流程](#开发流程-)
   - [1. 设计表结构, 创建物理表](#1-设计表结构-创建物理表)
   - [2. 自动生成数据层相关代码](#2-自动生成数据层相关代码)
   - [3. 编写 api 层代码](#3-编写-api-层代码)
@@ -133,11 +133,11 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [5. 编写 service 层代码](#5-编写-service-层代码)
   - [6. 编写 controller 层代码](#6-编写-controller-层代码)
   - [7. 路由注册](#7-路由注册)
-- [项目部署](#项目部署)
-- [使用 Makefile 管理项目](#使用-Makefile-管理项目)
-- [变更项目名称](#变更项目名称)
+- [项目部署](#项目部署-)
+- [使用 Makefile 管理项目](#使用-makefile-管理项目-)
+- [变更项目名称](#变更项目名称-)
 
-### 工程目录
+### 工程目录 [⌅](#-documentation)
 
 ```sh
 ├── api  # 对外接口定义: 对外提供服务的输入/输出数据结构定义, 路由path定义, 数据校验等
@@ -219,7 +219,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
     └── version.go
 ```
 
-### 环境管理
+### 环境管理 [⌅](#-documentation)
 
 #### 开发环境
 
@@ -254,7 +254,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 
 同测试环境, 只不过指定的配置文件不同, 略.
 
-### 多命令管理
+### 多命令管理 [⌅](#-documentation)
 
 #### 目录设计
 
@@ -273,7 +273,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 `./gf2-demo-cli -c cli_config.yaml` 或
 `GF_GCFG_FILE=cli_config.yaml ./gf2-demo-cli`
 
-### 错误码管理
+### 错误码管理 [⌅](#-documentation)
 
 #### 规范制定
 
@@ -371,7 +371,7 @@ Content-Length: 73
 {"code":"InternalError","data":null,"msg":"an error occurred internally"}
 ```
 
-### 日志管理
+### 日志管理 [⌅](#-documentation)
 
 #### HTTP 服务日志
 
@@ -497,7 +497,7 @@ g.Log("cli").Warningf(ctx, "warning message")
 {"Time":"2023-02-08 17:04:08.957","TraceId":"d0e7f61203ce41171374033689322f91","CtxStr":"windvalley, windvalley@sre.im","Level":"ERRO","CallerPath":"/Users/xg/github/gf2-demo/internal/controller/hello.go:34:","Content":"xxx failed"}
 ```
 
-### 链路跟踪
+### 链路跟踪 [⌅](#-documentation)
 
 - 用于链路跟踪的响应 Header 为: `Trace-Id`, 会优先使用客户端传递的请求 Header `X-Request-Id` 的值作为 `Trace-Id` 的值, 如果不存在会自动生成.
 
@@ -508,7 +508,7 @@ g.Log("cli").Warningf(ctx, "warning message")
 > - 浏览器请求时会自动携带 Header: `X-Request-Id`
 > - 请参考文档: https://goframe.org/pages/viewpage.action?pageId=49745257
 
-### 版本管理
+### 版本管理 [⌅](#-documentation)
 
 1. 给项目仓库打 tag
 
@@ -541,7 +541,7 @@ Go Version:  go1.17.6
 GF Version:  v2.3.1
 ```
 
-### 开发流程
+### 开发流程 [⌅](#-documentation)
 
 #### 1. 设计表结构, 创建物理表
 
@@ -641,15 +641,14 @@ import _ "gf2-demo/internal/logic"
 
 路由分组注册, 调用 controller 层(`internal/controller/`), 对外暴露接口.
 
-### 项目部署
+### 项目部署 [⌅](#-documentation)
 
 > 参考: https://goframe.org/pages/viewpage.action?pageId=1114403
 
-### 使用 Makefile 管理项目
+### 使用 Makefile 管理项目 [⌅](#-documentation)
 
 > NOTE:
->
-> MacOS 环境下, 需要安装 gsed 命令.
+> 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
 
 ```sh
 # 安装最新版gf
@@ -674,7 +673,7 @@ make build
 make build.cli
 ```
 
-### 变更项目名称
+### 变更项目名称 [⌅](#-documentation)
 
 请按如下步骤便捷地将本项目名称 `gf2-demo` 改成你自己的项目名称 `new-project`.
 
@@ -690,6 +689,9 @@ $ mv gf2-demo new-project
 $ cd new-project
 $ hack/change_project_name.sh new-project
 ```
+
+> NOTE:
+> 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
 
 3. 验证
 
