@@ -1,5 +1,10 @@
 # gf2-demo
 
+[![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://go.dev)
+[![Version](https://img.shields.io/github/v/release/windvalley/gf2-demo?include_prereleases)](https://github.com/windvalley/gf2-demo/releases)
+[![LICENSE](https://img.shields.io/github/license/windvalley/gf2-demo)](LICENSE)
+![Page Views](https://views.whatilearened.today/views/github/windvalley/gf2-demo.svg)
+
 `gf2-demo` 是一个基于 [GoFrameV2](https://github.com/gogf/gf) 用来快速开发后端服务的脚手架, 目标使开发者只需关注业务逻辑的编写, 快速且规范地交付项目.
 
 ## 💌 Features
@@ -8,15 +13,13 @@
 - 规范业务错误码, 中间件统一拦截响应, 规范响应格式
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、开发者打印的日志、其他可执行命令的日志配置
 - 多环境管理: 开发环境、测试环境、生产环境
-- 项目的二进制文件可打印当前版本信息
+- 编译的二进制文件可打印当前应用的版本信息
 - 链路跟踪中间件, 默认使用客户端按规范传递的`X-Request-Id`
 - 通过 Makefile 管理项目: `make run`, `make run.cli`, `make build`, `make build.cli` 等
 
 ## 🚀 Quick Start
 
 ### 安装
-
-请提前安装 Go 环境, 要求 Go 版本: `1.15+`
 
 ```sh
 git clone --depth 1 git@github.com:windvalley/gf2-demo.git
@@ -26,6 +29,8 @@ cd gf2-demo
 # 安装gf
 make cli
 ```
+
+> 请提前安装 Go 环境, 要求 Go 版本: `1.15+`
 
 ### 热更新(Live reload)
 
@@ -130,6 +135,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [7. 路由注册](#7-路由注册)
 - [项目部署](#项目部署)
 - [使用 Makefile 管理项目](#使用-Makefile-管理项目)
+- [变更项目名称](#变更项目名称)
 
 ### 工程目录
 
@@ -572,7 +578,7 @@ make dao
 
 > 参考: https://goframe.org/pages/viewpage.action?pageId=7295964
 
-#### 5. 编写 service 层
+#### 5. 编写 service 层代码
 
 1. 编写具体的业务实现(`internal/logic/`)
 
@@ -613,7 +619,7 @@ func new() *sMiddleware {
 
 4. 程序启动后自动注册服务
 
-在程序入口文件中 `cmd/gf2-demo-api/gf2-demo-api.go` 倒入 logic 包.
+在程序入口文件中 `cmd/gf2-demo-api/gf2-demo-api.go` 导入 logic 包.
 
 ```go
 package main
@@ -623,7 +629,7 @@ import _ "gf2-demo/internal/logic"
 
 > 参考: https://goframe.org/pages/viewpage.action?pageId=49770772
 
-#### 6. 编写 controller 层
+#### 6. 编写 controller 层代码
 
 位置: `internal/controller/`
 
@@ -668,7 +674,45 @@ make build
 make build.cli
 ```
 
+### 变更项目名称
+
+请按如下步骤便捷地将本项目名称 `gf2-demo` 改成你自己的项目名称 `new-project`.
+
+1. 变更项目目录名称
+
+```sh
+$ mv gf2-demo new-project
+```
+
+2. 运行变更脚本
+
+```sh
+$ cd new-project
+$ hack/change_project_name.sh new-project
+```
+
+3. 验证
+
+```sh
+$ make build
+
+输出如下:
+
+bin
+├── darwin_amd64
+│   └── new-project-api
+│   └── new-project-cli
+└── linux_amd64
+    └── new-project-api
+    └── new-project-cli
+```
+
 ## 📜 References
 
 - https://goframe.org/display/gf
 - https://pkg.go.dev/github.com/gogf/gf/v2
+
+## ⚖️ License
+
+This project is under the MIT License.
+See the [LICENSE](LICENSE) file for the full license text.
