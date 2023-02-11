@@ -11,7 +11,7 @@
 
 - 优化工程目录结构, 使支持多个可执行命令
 - 规范业务错误码, 中间件统一拦截响应, 规范响应格式
-- 完善 HTTP 服务访问日志、HTTP 服务错误日志、开发者打印的日志、其他可执行命令的日志配置
+- 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
 - 多环境管理: 开发环境、测试环境、生产环境
 - 编译的二进制文件可打印当前应用的版本信息
 - 链路跟踪中间件, 默认使用客户端按规范传递的`X-Request-Id`
@@ -185,8 +185,8 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │   └── packed.go
 │   └── service  # 业务接口: 用于业务模块解耦的接口定义层. 具体的接口实现在logic中进行注入
 │       └── middleware.go
-├── manifest  # 交付清单: 包含程序编译、部署、运行、配置的文件
-│   ├── config  # 配置文件存放目录
+├── manifest  # 交付清单: 包含应用配置文件, 部署文件等
+│   ├── config  # 配置文件存放目录, 可通过gf build/make build打包到二进制文件中
 │   │   ├── config.prod.yaml  # 生产环境
 │   │   ├── config.test.yaml  # 测试环境
 │   │   └── config.yaml  # 开发环境
@@ -554,7 +554,7 @@ GF Version:  v2.3.1
 gfcli:
   gen:
     dao:
-      - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2-demo"
+      - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2_demo"
 ```
 
 2. 自动生成 `internal/dao`, `internal/model/do`, `internal/model/entity`

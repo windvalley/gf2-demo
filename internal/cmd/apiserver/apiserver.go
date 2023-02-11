@@ -86,7 +86,7 @@ var (
 			)
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
 				group.Bind(
-					controller.Hello,
+					controller.Demo,
 				)
 			})
 			s.Run()
