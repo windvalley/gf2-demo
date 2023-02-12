@@ -11,6 +11,12 @@ import (
 	"gf2-demo/internal/codes"
 )
 
+type response struct {
+	Code string      `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data"`
+}
+
 // ResponseHandler custom response format
 func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 	r.Middleware.Next()
@@ -72,9 +78,9 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 	}
 
 	r.Response.WriteHeader(bizCode.BizDetail().HttpCode)
-	r.Response.WriteJsonExit(g.Map{
-		`code`: bizCode.BizDetail().Code,
-		`msg`:  msg,
-		`data`: res,
+	r.Response.WriteJsonExit(response{
+		Code: bizCode.BizDetail().Code,
+		Msg:  msg,
+		Data: res,
 	})
 }
