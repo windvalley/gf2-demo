@@ -63,7 +63,7 @@ Trace-Id: 506dccff4a08431731f5d0259180c3b8
 Date: Sun, 12 Feb 2023 09:03:24 GMT
 Content-Length: 130
 
-{"code":"OK","data":{"id":1,"fielda":"windvalley","created_at":"2008-08-08 08:08:08","updated_at":"2008-08-08 08:08:08"},"msg":""}
+{"code":"OK","msg":"","data":{"id":1,"fielda":"windvalley","created_at":"2008-08-08 08:08:08","updated_at":"2008-08-08 08:08:08"}}
 ```
 
 ### 编译二进制文件
@@ -169,7 +169,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 ```sh
 ├── api  # 对外接口定义: 对外提供服务的输入/输出数据结构定义, 路由path定义, 数据校验等
 │   └── v1
-│       └── hello.go
+│       └── demo.go
 ├── bin  # make build 和 make build.cli 生成的二进制可执行文件所在目录
 │   ├── darwin_amd64
 │   │   ├── gf2-demo-api
@@ -184,6 +184,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │       └── gf2-demo-cli.go
 ├── hack  # 存放项目开发工具、脚本等内容. 例如: gf工具的配置, 各种shell/bat脚本等文件
 │   └── config.yaml  # gf 工具的配置文件, 比如 gf gen/gf build 等会使用这里的配置内容
+│   └── change_project_name.sh  # 将示例项目名称改成你自己的项目名称
 ├── internal
 │   ├── cmd  # 对应外层 cmd 目录
 │   │   ├── apiserver  # 对应 gf2-demo-api, 命令配置, 路由注册等
@@ -196,21 +197,30 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   ├── consts  # 项目所有通用常量定义
 │   │   └── consts.go
 │   ├── controller  # 对外接口实现: 接收/解析用户输入参数的入口/接口层
-│   │   └── hello.go
+│   │   └── demo.go
 │   ├── dao  # 数据访问对象，这是一层抽象对象，用于和底层数据库交互，仅包含最基础的 CURD 方法. dao层通过框架的ORM抽象层组件与底层真实的数据库交互
+│   │   ├── demo.go
+│   │   └── internal
+│   │       └── demo.go
 │   ├── logic  # 业务封装: 业务逻辑封装管理, 特定的业务逻辑实现和封装. 往往是项目中最复杂的部分. logic层的业务逻辑需要通过调用dao来实现数据的操作, 调用dao时需要传递do数据结构对象, 用于传递查询条件、输入数据. dao执行完毕后通过Entity数据模型将数据结果返回给service(logic)层
 │   │   ├── logic.go
+│   │   ├── demo  # demo服务的具体实现
+│   │   │   └── demo.go
 │   │   └── middleware  # 中间件
 │   │       ├── accessuser.go
 │   │       ├── middleware.go
-│   │       ├── response.go
+│   │       ├── response.go  # 统一拦截规范响应
 │   │       └── traceid.go
 │   ├── model  # 数据结构管理模块, 管理数据实体对象, 以及输入与输出数据结构定义. 这里的model不仅负责维护数据实体对象(entity)结构定义, 也包括所有的输入/输出数据结构定义, 被api/dao/service共同引用
-│   │   ├── do  # 领域对象: 用于dao数据操作中业务模型与实例模型转换, 由工具维护, 用户不能修改
-│   │   └── entity  # 数据模型: 是模型与数据集合的一对一关系, 通常和数据表一一对应, 由工具维护, 用户不能修改
+│   │   ├── demo.go  # 输入/输出数据结构定义
+│   │   ├── do  # 领域对象: 用于dao数据操作中业务模型与实例模型转换. NOTE: 由工具维护, 不要手动修改
+│   │   │   └── demo.go
+│   │   └── entity  # 数据模型: 是模型与数据集合的一对一关系, 通常和数据表一一对应. NOTE: 由工具维护, 不要手动修改
+│   │   │   └── demo.go
 │   ├── packed
 │   │   └── packed.go
-│   └── service  # 业务接口: 用于业务模块解耦的接口定义层. 具体的接口实现在logic中进行注入
+│   └── service  # 业务接口: 用于业务模块解耦的接口定义层. 具体的接口实现在logic中进行注入. NOTE: 由工具维护, 不要手动修改
+│       ├── demo.go
 │       └── middleware.go
 ├── manifest  # 交付清单: 包含应用配置文件, 部署文件等
 │   ├── config  # 配置文件存放目录, 可通过gf build/make build打包到二进制文件中
@@ -369,7 +379,7 @@ Trace-Id: 10c9769ce5cf4117c19a595c2d781e94
 Date: Wed, 08 Feb 2023 09:38:41 GMT
 Content-Length: 34
 
-{"code":"OK","data":null,"msg":""}
+{"code":"OK","msg":"","data":null}
 ```
 
 - 401 错误
@@ -382,7 +392,7 @@ Trace-Id: a89b7652b1cf41170d6e5233fbb76a21
 Date: Wed, 08 Feb 2023 09:34:56 GMT
 Content-Length: 83
 
-{"code":"NotAuthorized","data":null,"msg":"resource is not authorized: some error"}
+{"code":"NotAuthorized","msg":"resource is not authorized: some error","data":null}
 ```
 
 - 500 错误
@@ -395,7 +405,7 @@ Trace-Id: 70cd58a9d8cf4117376a265eb84137e5
 Date: Wed, 08 Feb 2023 09:37:45 GMT
 Content-Length: 73
 
-{"code":"InternalError","data":null,"msg":"an error occurred internally"}
+{"code":"InternalError","msg":"an error occurred internally","data":null}
 ```
 
 ### 日志管理 [⌅](#-documentation)
