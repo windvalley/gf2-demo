@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.6.0
+
+### Added
+
+- 增加关系数据库配置和 sql 日志配置
+- 增加将各层串起来的简单 CRUD 示例接口供参考
+
+### Changed
+
+- 优化响应 json 的字段顺序: code -> msg -> data
+
 ## v0.5.0
 
 ### Added
