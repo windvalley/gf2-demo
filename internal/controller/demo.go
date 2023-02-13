@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 
@@ -38,7 +39,7 @@ func (c *cDemo) Info(ctx context.Context, req *v1.DemoInfoReq) (*v1.DemoInfoRes,
 	}
 
 	if demoInfo == nil {
-		return nil, gerror.NewCode(codes.CodeNotFound)
+		return nil, gerror.WrapCode(codes.CodeNotFound, fmt.Errorf("fielda '%s'", req.Fielda))
 	}
 
 	return &v1.DemoInfoRes{
@@ -61,4 +62,22 @@ func (c *cDemo) Create(ctx context.Context, req *v1.DemoCreateReq) (*v1.DemoCrea
 	}
 
 	return &v1.DemoCreateRes{ID: res.ID}, err
+}
+
+func (c *cDemo) Update(ctx context.Context, req *v1.DemoUpdateReq) (*v1.DemoUpdateRes, error) {
+	data := model.DemoUpdateInput{
+		ID:     req.ID,
+		Fielda: req.Fielda,
+		Fieldb: req.Fieldb,
+	}
+
+	err := service.Demo().Update(ctx, data)
+
+	return nil, err
+}
+
+func (c *cDemo) Delete(ctx context.Context, req *v1.DemoDeleteReq) (*v1.DemoDeleteRes, error) {
+	err := service.Demo().Delete(ctx, req.ID)
+
+	return nil, err
 }

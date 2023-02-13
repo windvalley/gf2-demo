@@ -14,7 +14,11 @@ import (
 type (
 	IDemo interface {
 		Create(ctx context.Context, in model.DemoCreateInput) (*model.DemoCreateOutput, error)
+		Update(ctx context.Context, in model.DemoUpdateInput) error
 		GetInfo(ctx context.Context, fileda string) (*entity.Demo, error)
+		Delete(ctx context.Context, id uint) error
+		IDNotFound(ctx context.Context, id uint) (bool, error)
+		FieldaNotFound(ctx context.Context, fielda string) (bool, error)
 	}
 )
 

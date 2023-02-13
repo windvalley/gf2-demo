@@ -1,8 +1,12 @@
-package user
+package demo
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/gogf/gf/v2/errors/gerror"
+
+	"gf2-demo/internal/codes"
 	"gf2-demo/internal/dao"
 	"gf2-demo/internal/model"
 	"gf2-demo/internal/model/do"
@@ -21,6 +25,15 @@ func New() *sDemo {
 }
 
 func (s *sDemo) Create(ctx context.Context, in model.DemoCreateInput) (*model.DemoCreateOutput, error) {
+	notFound, err := s.FieldaNotFound(ctx, in.Fielda)
+	if err != nil {
+		return nil, err
+	}
+	if !notFound {
+		err1 := gerror.WrapCode(codes.CodeNotAvailable, fmt.Errorf("fielda '%s' already exists", in.Fielda))
+		return nil, err1
+	}
+
 	id, err := dao.Demo.Ctx(ctx).Data(in).InsertAndGetId()
 	if err != nil {
 		return nil, err
@@ -29,6 +42,30 @@ func (s *sDemo) Create(ctx context.Context, in model.DemoCreateInput) (*model.De
 	return &model.DemoCreateOutput{
 		ID: uint(id),
 	}, nil
+}
+
+func (s *sDemo) Update(ctx context.Context, in model.DemoUpdateInput) error {
+	idNotFound, err := s.IDNotFound(ctx, in.ID)
+	if err != nil {
+		return err
+	}
+	if idNotFound {
+		return gerror.WrapCode(codes.CodeNotFound, fmt.Errorf("id '%d' not found", in.ID))
+	}
+
+	count, err := dao.Demo.Ctx(ctx).Where("id!=?", in.ID).Where("fielda=?", in.Fielda).Count()
+	if err != nil {
+		return err
+	}
+	if count != 0 {
+		return gerror.WrapCode(codes.CodeNotAvailable, fmt.Errorf("fielda '%s' already exists", in.Fielda))
+	}
+
+	_, err1 := dao.Demo.Ctx(ctx).OmitEmpty().Data(in).Where(do.Demo{
+		Id: in.ID,
+	}).Update()
+
+	return err1
 }
 
 func (s *sDemo) GetInfo(ctx context.Context, fileda string) (*entity.Demo, error) {
@@ -46,4 +83,46 @@ func (s *sDemo) GetInfo(ctx context.Context, fileda string) (*entity.Demo, error
 	}
 
 	return demo, err
+}
+
+func (s *sDemo) Delete(ctx context.Context, id uint) error {
+	res, err := dao.Demo.Ctx(ctx).Where(do.Demo{
+		Id: id,
+	}).Delete()
+	if err != nil {
+		return err
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if n == 0 {
+		return gerror.NewCode(codes.CodeNotFound)
+	}
+
+	return nil
+}
+
+func (s *sDemo) IDNotFound(ctx context.Context, id uint) (bool, error) {
+	count, err := dao.Demo.Ctx(ctx).Where(do.Demo{
+		Id: id,
+	}).Count()
+	if err != nil {
+		return false, err
+	}
+
+	return count == 0, nil
+}
+
+func (s *sDemo) FieldaNotFound(ctx context.Context, fielda string) (bool, error) {
+	count, err := dao.Demo.Ctx(ctx).Where(do.Demo{
+		Fielda: fielda,
+	}).Count()
+	if err != nil {
+		return false, err
+	}
+
+	return count == 0, nil
 }

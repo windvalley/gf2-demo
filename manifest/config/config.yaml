@@ -85,4 +85,4 @@ database:
 
   default:
     link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2_demo"
-    debug: true # 默认false
+    debug: true # 默认 false

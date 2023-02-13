@@ -16,7 +16,8 @@ CREATE TABLE `demo`
     `fieldb`  varchar(45) NOT NULL COMMENT 'Private field demo',
     `created_at` datetime DEFAULT NULL COMMENT 'Created Time',
     `updated_at` datetime DEFAULT NULL COMMENT 'Updated Time',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `idx_fielda` (`fielda`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Demo records of table `demo`
