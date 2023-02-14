@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.6.1
+
+### Added
+
+- 增加获取资源列表接口的代码示例
+
+### Changed
+
+- 响应 json 增加`traceid`字段, 将`msg`字段修改为`message`:
+
+```json
+{
+  "code": "string",
+  "message": "string",
+  "traceid": "string",
+  "data": null
+}
+```
+
+- 优化 `401` 和 `403` 的业务错误码描述
+- 完善 README.md 文档, 增加详细的开发流程
+
 ## v0.6.0
 
 ### Added

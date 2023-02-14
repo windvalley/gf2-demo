@@ -14,7 +14,8 @@
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
 - 多环境管理: 开发环境、测试环境、生产环境
 - 编译的二进制文件可打印当前应用的版本信息
-- 通过 Makefile 管理项目: `make run`, `make run.cli`, `make build`, `make build.cli` 等
+- 完整的增删改查接口示例, 快速上手
+- 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
 
 ## 🚀 Quick Start
 
@@ -574,8 +575,7 @@ g.Log("cli").Warningf(ctx, "warning message")
 
 > NOTE:
 >
-> - 浏览器请求时会自动携带 Header: `X-Request-Id`
-> - 请参考文档: https://goframe.org/pages/viewpage.action?pageId=49745257
+> 参考: https://goframe.org/pages/viewpage.action?pageId=49745257
 
 ### 版本管理 [⌅](#-documentation)
 
@@ -639,6 +639,35 @@ GF Version:  v2.3.1
 
 #### 1. 设计表结构, 创建物理表
 
+1. 设计表结构
+
+```sql
+-- manifest/sql/gf2_demo.sql
+-- Create demo database
+CREATE DATABASE IF NOT EXISTS `gf2_demo`;
+
+USE `gf2_demo`;
+
+-- Create demo table
+DROP TABLE IF EXISTS `demo`;
+CREATE TABLE `demo`
+(
+    `id`        int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `fielda`  varchar(45) NOT NULL COMMENT 'Field demo',
+    `fieldb`  varchar(45) NOT NULL COMMENT 'Private field demo',
+    `created_at` datetime DEFAULT NULL COMMENT 'Created Time',
+    `updated_at` datetime DEFAULT NULL COMMENT 'Updated Time',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `idx_fielda` (`fielda`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+2. 创建物理表
+
+```sh
+$ mysql -uroot -p'123456' < manifest/sql/demo.sql
+```
+
 #### 2. 自动生成数据层相关代码
 
 1. gf 工具配置
@@ -660,14 +689,30 @@ gfcli:
 2. 自动生成 `internal/dao`, `internal/model/do`, `internal/model/entity`
 
 ```sh
-make dao
+$ make dao
 ```
 
 #### 3. 编写 api 层代码
 
 位置: `api/v1/`.
 
-定义业务侧数据结构, 提供对外接口的输入/输出数据结构, 定义访问路由 path, 请求数据校验, api 文档等.
+定义业务侧数据结构, 提供对外接口的输入/输出数据结构, 定义访问路由 path, 请求方法, 数据校验, api 文档等.
+
+示例:
+
+```go
+// api/v1/demo.go
+
+type DemoCreateReq struct {
+	g.Meta `path:"/demo" method:"post" tags:"DemoService" summary:"Create a demo record"`
+	Fielda string `p:"fileda" v:"required|passport|length:4,30"`
+	Fieldb string `p:"filedb" v:"required|length:10,30"`
+}
+
+type DemoCreateRes struct {
+	ID uint `json:"id"`
+}
+```
 
 #### 4. 编写 model 层代码
 
@@ -676,52 +721,92 @@ make dao
 定义数据侧数据结构，提供对内的数据处理的输入/输出数据结构.
 在 GoFrame 框架规范中, 这部分输入输出模型名称以 `XxxInput` 和 `XxxOutput` 格式命名, 需要在 `internal/model` 目录下创建文件.
 
+示例:
+
+```go
+// internal/model/demo.go
+
+type DemoCreateInput struct {
+	Fielda string
+	Fieldb string
+}
+
+type DemoCreateOutput struct {
+	ID uint
+}
+```
+
 > 参考: https://goframe.org/pages/viewpage.action?pageId=7295964
 
 #### 5. 编写 service 层代码
 
 1. 编写具体的业务实现(`internal/logic/`)
 
-调用数据访问层(`internal/dao/`), 编写具体的业务逻辑.
+调用数据访问层(`internal/dao/`), 编写具体的业务逻辑. 这里是业务逻辑的重心, 绝大部分的业务逻辑都应该在这里编写.
 
-这里是业务逻辑的重心, 绝大部分的业务逻辑都应该在这里编写.
+示例:
 
-2. 自动生成 service 接口(`internal/service/`)
+```go
+// internal/logic/demo/demo.go
+
+type sDemo struct{}
+
+func New() *sDemo {
+	return &sDemo{}
+}
+
+func (s *sDemo) Create(ctx context.Context, in model.DemoCreateInput) (*model.DemoCreateOutput, error) {
+	notFound, err := s.FieldaNotFound(ctx, in.Fielda)
+	if err != nil {
+		return nil, err
+	}
+	if !notFound {
+		err1 := gerror.WrapCode(codes.CodeNotAvailable, fmt.Errorf("fielda '%s' already exists", in.Fielda))
+		return nil, err1
+	}
+
+	id, err := dao.Demo.Ctx(ctx).Data(in).InsertAndGetId()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.DemoCreateOutput{
+		ID: uint(id),
+	}, nil
+}
+```
+
+2. 自动生成 service 接口代码(`internal/service/`)
 
 ```sh
-make service
+$ make service
 ```
 
 3. 将业务实现注入到服务接口(依赖注入)
 
-拿中间件举例:
-
-`internal/logic/middleware/middleware.go`
+示例:
 
 ```go
-package middleware
+// internal/logic/demo/demo.go
 
-import "gf2-demo/internal/service"
+import 	"gf2-demo/internal/service"
 
-type (
-	sMiddleware struct{}
-)
+type sDemo struct{}
 
-// 服务注册/依赖注入
 func init() {
-	service.RegisterMiddleware(new())
-}
-
-func new() *sMiddleware {
-	return &sMiddleware{}
+	service.RegisterDemo(New())
 }
 ```
 
 4. 程序启动后自动注册服务
 
-在程序入口文件中 `cmd/gf2-demo-api/gf2-demo-api.go` 导入 logic 包.
+在程序入口文件 `cmd/gf2-demo-api/gf2-demo-api.go` 中导入 logic 包.
+
+示例:
 
 ```go
+// cmd/gf2-demo-api/gf2-demo-api.go
+
 package main
 
 import _ "gf2-demo/internal/logic"
@@ -735,11 +820,51 @@ import _ "gf2-demo/internal/logic"
 
 解析 api 层(`api/v1/`)定义的业务侧用户输入数据结构, 组装为 model 层(`internal/model/`)定义的数据侧输入数据结构实例, 调用 `internal/service/` 层的服务, 最后直接将结果或错误 return 即可(响应中间件会统一拦截处理, 按规范响应用户).
 
+示例:
+
+```go
+// internal/controller/demo.go
+
+var (
+	Demo = cDemo{}
+)
+
+type cDemo struct{}
+
+func (c *cDemo) Create(ctx context.Context, req *v1.DemoCreateReq) (*v1.DemoCreateRes, error) {
+	data := model.DemoCreateInput{
+		Fielda: req.Fielda,
+		Fieldb: req.Fieldb,
+	}
+
+	res, err := service.Demo().Create(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.DemoCreateRes{ID: res.ID}, err
+}
+```
+
 #### 7. 路由注册
 
 位置: `internal/cmd/apiserver/`
 
 路由分组注册, 调用 controller 层(`internal/controller/`), 对外暴露接口.
+
+示例:
+
+```go
+// internal/cmd/apiserver/apiserver.go
+
+			s := g.Server()
+			s.Group("/v1", func(group *ghttp.RouterGroup) {
+				group.Bind(
+					controller.Demo,
+				)
+			})
+			s.Run()
+```
 
 ### 项目部署 [⌅](#-documentation)
 
