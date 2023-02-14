@@ -14,7 +14,7 @@
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
 - 多环境管理: 开发环境、测试环境、生产环境
 - 编译的二进制文件可打印当前应用的版本信息
-- 完整的增删改查接口示例, 快速上手
+- 完整的增删改查接口示例, 帮助快速上手
 - 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
 
 ## 🚀 Quick Start
@@ -54,7 +54,7 @@ make run.cli
 ### 访问测试
 
 ```sh
-$ curl --location --request GET 'localhost:9000/v1/demo/info?fielda=windvalley' -i
+$ curl -X GET -i 'localhost:9000/v1/demo/windvalley'
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -63,7 +63,7 @@ Trace-Id: 506dccff4a08431731f5d0259180c3b8
 Date: Sun, 12 Feb 2023 09:03:24 GMT
 Content-Length: 130
 
-{"code":"OK","message":"","traceid": "d804808f90a04317d813da5ab95d4b97","data":{"id":1,"fielda":"windvalley","created_at":"2008-08-08 08:08:08","updated_at":"2008-08-08 08:08:08"}}
+{"code":"OK","message":"","traceid": "506dccff4a08431731f5d0259180c3b8","data":{"id":1,"fielda":"windvalley","created_at":"2008-08-08 08:08:08","updated_at":"2008-08-08 08:08:08"}}
 ```
 
 ### 编译二进制文件
@@ -133,8 +133,8 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [配置文件](#配置文件)
 - [错误码管理](#错误码管理-)
   - [规范制定](#规范制定)
-  - [维护业务错误码](#维护业务错误码)
-  - [测试效果](#测试效果)
+  - [业务错误码](#业务错误码)
+  - [响应示例](#响应示例)
 - [日志管理](#日志管理-)
   - [HTTP 服务日志](#HTTP-服务日志)
     - [1. HTTP 服务日志配置](#1-HTTP-服务日志配置)
@@ -160,6 +160,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [5. 编写 service 层代码](#5-编写-service-层代码)
   - [6. 编写 controller 层代码](#6-编写-controller-层代码)
   - [7. 路由注册](#7-路由注册)
+  - [8. 接口访问测试](#8-接口访问测试)
 - [项目部署](#项目部署-)
 - [使用 Makefile 管理项目](#使用-makefile-管理项目-)
 - [变更项目名称](#变更项目名称-)
@@ -341,7 +342,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - 服务端错误
     - `500`: 所有服务端错误
 
-#### 维护业务错误码
+#### 业务错误码
 
 请在 `internal/codes/biz_codes.go` 文件中维护业务错误码.
 
@@ -363,11 +364,7 @@ var (
 )
 ```
 
-#### 测试效果
-
-```sh
-curl --location --request GET 'localhost:9000/v1/hello' -i
-```
+#### 响应示例
 
 - 正确响应
 
@@ -379,7 +376,12 @@ Trace-Id: 10c9769ce5cf4117c19a595c2d781e94
 Date: Wed, 08 Feb 2023 09:38:41 GMT
 Content-Length: 34
 
-{"code":"OK","message":"","traceid": "e8c7144dc0a04317d913da5a328ffb1f","data":null}
+{
+    "code": "OK",
+    "message": "",
+    "traceid": "10c9769ce5cf4117c19a595c2d781e94",
+    "data": null
+}
 ```
 
 - 401 错误
@@ -392,7 +394,12 @@ Trace-Id: a89b7652b1cf41170d6e5233fbb76a21
 Date: Wed, 08 Feb 2023 09:34:56 GMT
 Content-Length: 83
 
-{"code":"NotAuthorized","message":"resource is not authorized: some error","traceid": "78b65148cda04317da13da5a28efcd4a","data":null}
+{
+    "code": "AuthFailed",
+    "message": "authentication failed",
+    "traceid": "a89b7652b1cf41170d6e5233fbb76a21",
+    "data": null
+}
 ```
 
 - 500 错误
@@ -405,7 +412,12 @@ Trace-Id: 70cd58a9d8cf4117376a265eb84137e5
 Date: Wed, 08 Feb 2023 09:37:45 GMT
 Content-Length: 73
 
-{"code":"InternalError","message":"an error occurred internally","traceid": "486709b1d1a04317db13da5a6232f49f","data":null}
+{
+    "code": "InternalError",
+    "message": "an error occurred internally",
+    "traceid": "70cd58a9d8cf4117376a265eb84137e5",
+    "data": null
+}
 ```
 
 ### 日志管理 [⌅](#-documentation)
@@ -438,9 +450,9 @@ server:
 ##### 2. 生成的日志示例
 
 ```sh
-curl --location --request GET 'localhost:9000/v1/hello' \
-    --header 'X-Consumer-Custom-ID: windvalley' \
-    --header 'X-Consumer-Username: windvalley@sre.im'
+$ curl -X GET 'localhost:9000/v1/demo' \
+    -H 'X-Consumer-Custom-ID: windvalley' \
+    -H 'X-Consumer-Username: windvalley@sre.im'
 ```
 
 - 服务访问日志示例
@@ -480,6 +492,7 @@ Stack:
 
 ```yaml
 # manifest/config/config.yaml
+
 # doc: https://goframe.org/pages/viewpage.action?pageId=1114245
 database:
   # sql日志
@@ -639,7 +652,7 @@ GF Version:  v2.3.1
 
 #### 1. 设计表结构, 创建物理表
 
-1. 设计表结构
+- 设计表结构
 
 ```sql
 -- manifest/sql/gf2_demo.sql
@@ -662,7 +675,7 @@ CREATE TABLE `demo`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-2. 创建物理表
+- 创建物理表
 
 ```sh
 $ mysql -uroot -p'123456' < manifest/sql/demo.sql
@@ -670,7 +683,7 @@ $ mysql -uroot -p'123456' < manifest/sql/demo.sql
 
 #### 2. 自动生成数据层相关代码
 
-1. gf 工具配置
+- gf 工具配置
 
 ```yaml
 # hack/config.yaml
@@ -686,7 +699,7 @@ gfcli:
         clear: true # 自动删除数据库中不存在对应数据表的本地dao/do/entity代码文件, 默认 false. 线上环境应设置为fasle
 ```
 
-2. 自动生成 `internal/dao`, `internal/model/do`, `internal/model/entity`
+- 自动生成 `internal/dao`, `internal/model/do`, `internal/model/entity`
 
 ```sh
 $ make dao
@@ -694,7 +707,7 @@ $ make dao
 
 #### 3. 编写 api 层代码
 
-位置: `api/v1/`.
+位置: `api/v1/`
 
 定义业务侧数据结构, 提供对外接口的输入/输出数据结构, 定义访问路由 path, 请求方法, 数据校验, api 文档等.
 
@@ -749,6 +762,13 @@ type DemoCreateOutput struct {
 ```go
 // internal/logic/demo/demo.go
 
+import (
+	"gf2-demo/internal/dao"
+	"gf2-demo/internal/model"
+	"gf2-demo/internal/model/do"
+	"gf2-demo/internal/model/entity"
+)
+
 type sDemo struct{}
 
 func New() *sDemo {
@@ -798,7 +818,7 @@ func init() {
 }
 ```
 
-4. 程序启动后自动注册服务
+4. 程序启动时自动注册服务
 
 在程序入口文件 `cmd/gf2-demo-api/gf2-demo-api.go` 中导入 logic 包.
 
@@ -825,6 +845,8 @@ import _ "gf2-demo/internal/logic"
 ```go
 // internal/controller/demo.go
 
+import 	"gf2-demo/internal/service"
+
 var (
 	Demo = cDemo{}
 )
@@ -850,20 +872,59 @@ func (c *cDemo) Create(ctx context.Context, req *v1.DemoCreateReq) (*v1.DemoCrea
 
 位置: `internal/cmd/apiserver/`
 
-路由分组注册, 调用 controller 层(`internal/controller/`), 对外暴露接口.
+路由注册, 调用 controller 层(`internal/controller/`), 对外暴露接口.
 
 示例:
 
 ```go
 // internal/cmd/apiserver/apiserver.go
 
+import	"gf2-demo/internal/controller"
+
+var (
+	Main = gcmd.Command{
+
+		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			s := g.Server()
+
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
 				group.Bind(
+
+					// 对外暴露的接口路由集合: 是 /v1 和 api/v1/demo.go 文件下的所有DemoXxxReq结构体定义的 path 的组合
 					controller.Demo,
 				)
 			})
+
 			s.Run()
+			return nil
+		},
+	}
+)
+```
+
+#### 8. 接口访问测试
+
+```sh
+# 运行
+$ make run
+
+# 访问
+$ curl -X POST -i 'localhost:9000/v1/demo' -d \
+'{
+    "fielda": "foobar",
+    "fieldb": "LJIYdjsvt83l"
+}'
+
+# 输出:
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: GoFrame HTTP Server
+Trace-Id: 0862d01e5aa64317c7fae45b326dabd1
+Date: Tue, 14 Feb 2023 09:19:52 GMT
+Content-Length: 88
+
+{"code":"OK","message":"","traceid":"0862d01e5aa64317c7fae45b326dabd1","data":{"id":17}}
 ```
 
 ### 项目部署 [⌅](#-documentation)

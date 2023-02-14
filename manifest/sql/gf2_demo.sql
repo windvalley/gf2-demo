@@ -1,5 +1,5 @@
 /*
-$ mysql -uroot -p'123456' < manifest/sql/demo.sql
+$ mysql -uroot -p'123456' < manifest/sql/gf2_demo.sql
 */
 
 -- Create demo database 
