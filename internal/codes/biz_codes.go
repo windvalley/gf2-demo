@@ -12,5 +12,4 @@ var (
 	CodeNotAvailable     = New(400, "NotAvailable", "not available")
 
 	CodeInternal = New(500, "InternalError", "an error occurred internally")
-	CodeUnknown  = New(500, "UnknownError", "unknown error")
 )

@@ -6,10 +6,7 @@ import (
 )
 
 const (
-	// NOTE: Do Not Edit the Value.
-	// All browser auto generate this header.
-	// Use g.Client() to request other service will take this header by default.
-	clientTraceIDHeader = "X-Request-Id"
+	clientTraceIDHeader = "Trace-Id"
 )
 
 // TraceID use X-Request-Id from client request

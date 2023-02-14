@@ -6,15 +6,17 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/util/gvalid"
 
 	"gf2-demo/internal/codes"
 )
 
 type response struct {
-	Code string      `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+	Code    string      `json:"code"`
+	Message string      `json:"message"`
+	TraceID string      `json:"traceid"`
+	Data    interface{} `json:"data"`
 }
 
 // ResponseHandler custom response format
@@ -79,8 +81,9 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 
 	r.Response.WriteHeader(bizCode.BizDetail().HttpCode)
 	r.Response.WriteJsonExit(response{
-		Code: bizCode.BizDetail().Code,
-		Msg:  msg,
-		Data: res,
+		Code:    bizCode.BizDetail().Code,
+		Message: msg,
+		TraceID: gctx.CtxId(r.Context()),
+		Data:    res,
 	})
 }

@@ -14,7 +14,6 @@
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
 - 多环境管理: 开发环境、测试环境、生产环境
 - 编译的二进制文件可打印当前应用的版本信息
-- 链路跟踪中间件, 默认使用客户端按规范传递的`X-Request-Id`
 - 通过 Makefile 管理项目: `make run`, `make run.cli`, `make build`, `make build.cli` 等
 
 ## 🚀 Quick Start
@@ -63,7 +62,7 @@ Trace-Id: 506dccff4a08431731f5d0259180c3b8
 Date: Sun, 12 Feb 2023 09:03:24 GMT
 Content-Length: 130
 
-{"code":"OK","msg":"","data":{"id":1,"fielda":"windvalley","created_at":"2008-08-08 08:08:08","updated_at":"2008-08-08 08:08:08"}}
+{"code":"OK","message":"","traceid": "d804808f90a04317d813da5ab95d4b97","data":{"id":1,"fielda":"windvalley","created_at":"2008-08-08 08:08:08","updated_at":"2008-08-08 08:08:08"}}
 ```
 
 ### 编译二进制文件
@@ -297,9 +296,8 @@ Find more information at: https://github.com/windvalley/gf2-demo
 
 举例:
 
-命令 1: `cmd/gf2-demo-api/gf2-demo-api.go` -> `internal/cmd/apiserver/apiserver.go`
-
-命令 2: `cmd/gf2-demo-cli/gf2-demo-cli.go` -> `internal/cmd/cli/cli.go`
+- 命令 1: `cmd/gf2-demo-api/gf2-demo-api.go` -> `internal/cmd/apiserver/apiserver.go`
+- 命令 2: `cmd/gf2-demo-cli/gf2-demo-cli.go` -> `internal/cmd/cli/cli.go`
 
 #### 配置文件
 
@@ -321,7 +319,8 @@ Find more information at: https://github.com/windvalley/gf2-demo
 ```json
 {
   "code": "string",
-  "msg": "string",
+  "message": "string",
+  "traceid": "string",
   "data": null
 }
 ```
@@ -348,18 +347,18 @@ Find more information at: https://github.com/windvalley/gf2-demo
 ```go
 package codes
 
-// http status, bisiness code, message
+//  http status, bisiness code, message
 var (
 	CodeOK          = New(200, "OK", "")
 	CodePartSuccess = New(202, "PartSuccess", "part success")
 
-	CodeNotAuthorized    = New(401, "NotAuthorized", "resource is not authorized")
-	CodePermissionDenied = New(403, "PermissionDenied", "permission denied")
+	CodePermissionDenied = New(401, "AuthFailed", "authentication failed")
+	CodeNotAuthorized    = New(403, "NotAuthorized", "resource is not authorized")
 	CodeNotFound         = New(404, "NotFound", "resource does not exist")
 	CodeValidationFailed = New(400, "ValidationFailed", "validation failed")
+	CodeNotAvailable     = New(400, "NotAvailable", "not available")
 
 	CodeInternal = New(500, "InternalError", "an error occurred internally")
-	CodeUnknown  = New(500, "UnknownError", "unknown error")
 )
 ```
 
@@ -379,7 +378,7 @@ Trace-Id: 10c9769ce5cf4117c19a595c2d781e94
 Date: Wed, 08 Feb 2023 09:38:41 GMT
 Content-Length: 34
 
-{"code":"OK","msg":"","data":null}
+{"code":"OK","message":"","traceid": "e8c7144dc0a04317d913da5a328ffb1f","data":null}
 ```
 
 - 401 错误
@@ -392,7 +391,7 @@ Trace-Id: a89b7652b1cf41170d6e5233fbb76a21
 Date: Wed, 08 Feb 2023 09:34:56 GMT
 Content-Length: 83
 
-{"code":"NotAuthorized","msg":"resource is not authorized: some error","data":null}
+{"code":"NotAuthorized","message":"resource is not authorized: some error","traceid": "78b65148cda04317da13da5a28efcd4a","data":null}
 ```
 
 - 500 错误
@@ -405,7 +404,7 @@ Trace-Id: 70cd58a9d8cf4117376a265eb84137e5
 Date: Wed, 08 Feb 2023 09:37:45 GMT
 Content-Length: 73
 
-{"code":"InternalError","msg":"an error occurred internally","data":null}
+{"code":"InternalError","message":"an error occurred internally","traceid": "486709b1d1a04317db13da5a6232f49f","data":null}
 ```
 
 ### 日志管理 [⌅](#-documentation)
@@ -569,7 +568,7 @@ g.Log("cli").Warningf(ctx, "warning message")
 
 ### 链路跟踪 [⌅](#-documentation)
 
-- 用于链路跟踪的响应 Header 为: `Trace-Id`, 会优先使用客户端传递的请求 Header `X-Request-Id` 的值作为 `Trace-Id` 的值, 如果不存在会自动生成.
+- 用于链路跟踪的响应 Header 为: `Trace-Id`, 会优先使用客户端传递的请求 Header `Trace-Id` 的值, 如果不存在会自动生成. 为了便于用户查看`Trace-Id`, 也在响应 json 中加入了 `traceid` 字段.
 
 - 服务内部如果需要调用其他服务的接口, 请使用 `g.Client()`, 因为他会给请求自动注入`Trace-Id`, 这样不同 API 服务之间的日志就可以通过 `Trace-Id` 串起来了.
 
