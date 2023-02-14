@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"gf2-demo/internal/model"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 )
@@ -13,12 +15,12 @@ API文档: https://goframe.org/pages/viewpage.action?pageId=47703679
 */
 
 // 查询记录示例
-type DemoInfoReq struct {
+type DemoGetReq struct {
 	g.Meta `path:"/demo/:fielda" method:"get" tags:"DemoService" summary:"Get demo info by fielda"`
 	Fielda string `p:"fielda" in:"path" v:"required|length:4,30"`
 }
 
-type DemoInfoRes struct {
+type DemoGetRes struct {
 	ID        uint        `json:"id"`
 	Fielda    string      `json:"fielda"`
 	CreatedAt *gtime.Time `json:"created_at"`
@@ -47,11 +49,23 @@ type DemoDeleteRes struct {
 
 // 更新记录示例
 type DemoUpdateReq struct {
-	g.Meta `path:"/demo" method:"put" tags:"DemoService" summary:"Update a demo record"`
-	ID     uint   `p:"id" v:"required|integer|min:1"`
+	g.Meta `path:"/demo/:id" method:"put" tags:"DemoService" summary:"Update a demo record"`
+	ID     uint   `p:"id" in:"path" v:"integer|min:1"`
 	Fielda string `p:"fileda" v:"required|passport|length:4,30"`
 	Fieldb string `p:"filedb" v:"required|length:10,30"`
 }
 
 type DemoUpdateRes struct {
+}
+
+// 查询记录列表示例
+type DemoListReq struct {
+	g.Meta `path:"/demo" method:"get" tags:"DemoService" summary:"Get demo records list"`
+	CommonPaginationReq
+}
+
+type DemoListRes struct {
+	CommonPaginationRes
+
+	List []model.DemoListOutputItem `json:"list"`
 }

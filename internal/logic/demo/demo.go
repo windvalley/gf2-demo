@@ -68,7 +68,7 @@ func (s *sDemo) Update(ctx context.Context, in model.DemoUpdateInput) error {
 	return err1
 }
 
-func (s *sDemo) GetInfo(ctx context.Context, fileda string) (*entity.Demo, error) {
+func (s *sDemo) Get(ctx context.Context, fileda string) (*entity.Demo, error) {
 	demoInfo, err := dao.Demo.Ctx(ctx).Where(do.Demo{
 		Fielda: fileda,
 	}).One()
@@ -103,6 +103,35 @@ func (s *sDemo) Delete(ctx context.Context, id uint) error {
 	}
 
 	return nil
+}
+
+func (s *sDemo) List(ctx context.Context, in model.DemoListInput) (*model.DemoListOutput, error) {
+	m := dao.Demo.Ctx(ctx)
+
+	out := &model.DemoListOutput{
+		PageNum:  in.PageNum,
+		PageSize: in.PageSize,
+	}
+
+	listModel := m.Page(in.PageNum, in.PageSize)
+
+	// 按照更新时间排序
+	listModel = listModel.OrderDesc(dao.Demo.Columns().UpdatedAt)
+
+	if err := listModel.Scan(&out.List); err != nil {
+		return nil, err
+	}
+	if len(out.List) == 0 {
+		return &model.DemoListOutput{}, nil
+	}
+
+	count, err := m.Count()
+	if err != nil {
+		return nil, err
+	}
+	out.Total = count
+
+	return out, nil
 }
 
 func (s *sDemo) IDNotFound(ctx context.Context, id uint) (bool, error) {

@@ -1,7 +1,7 @@
 # CLI tool, only in development environment.
-# https://goframe.org/pages/viewpage.action?pageId=3673173
+# doc: https://goframe.org/pages/viewpage.action?pageId=3673173
 gfcli:
-  # https://goframe.org/pages/viewpage.action?pageId=1115788
+  # doc: https://goframe.org/pages/viewpage.action?pageId=1115788
   build:
     path: "./bin" # 编译生成的二进制文件的存放目录. 生成的二进制名称默认与程序入口go文件同名
     arch: "amd64"
@@ -16,7 +16,7 @@ gfcli:
       version: v0.5.0
 
   gen:
-    # https://goframe.org/pages/viewpage.action?pageId=3673173
+    # doc: https://goframe.org/pages/viewpage.action?pageId=3673173
     dao:
       - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2_demo"
         tables: "" # 指定当前数据库中需要执行代码生成的数据表, 多个以逗号分隔. 如果为空, 表示数据库的所有表都会生成. 默认为空
@@ -25,7 +25,7 @@ gfcli:
         jsonCase: "snake" # 指定model中生成的数据实体对象中json标签名称规则. 默认 CamelLower
         clear: true # 自动删除数据库中不存在对应数据表的本地dao/do/entity代码文件, 默认 false. 线上环境应设置为fasle
 
-    # https://goframe.org/pages/viewpage.action?pageId=49770772
+    # doc: https://goframe.org/pages/viewpage.action?pageId=49770772
     service:
       clear: true # 自动删除logic中不存在的接口文件(仅删除自动维护的文件), 默认 false
 

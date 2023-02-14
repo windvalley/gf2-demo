@@ -18,7 +18,7 @@ var (
 
 type cDemo struct{}
 
-func (c *cDemo) Info(ctx context.Context, req *v1.DemoInfoReq) (*v1.DemoInfoRes, error) {
+func (c *cDemo) Get(ctx context.Context, req *v1.DemoGetReq) (*v1.DemoGetRes, error) {
 	// 调用其他HTTP服务测试
 	// foo := g.Client().GetContent(ctx, "http://localhost:8000/v1/hello")
 
@@ -33,7 +33,7 @@ func (c *cDemo) Info(ctx context.Context, req *v1.DemoInfoReq) (*v1.DemoInfoRes,
 	// err = errors.New("no permission")
 	// err = gerror.WrapCode(codes.CodeNotAuthorized, err)
 
-	demoInfo, err := service.Demo().GetInfo(ctx, req.Fielda)
+	demoInfo, err := service.Demo().Get(ctx, req.Fielda)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *cDemo) Info(ctx context.Context, req *v1.DemoInfoReq) (*v1.DemoInfoRes,
 		return nil, gerror.WrapCode(codes.CodeNotFound, fmt.Errorf("fielda '%s'", req.Fielda))
 	}
 
-	return &v1.DemoInfoRes{
+	return &v1.DemoGetRes{
 		ID:        demoInfo.Id,
 		Fielda:    demoInfo.Fielda,
 		CreatedAt: demoInfo.CreatedAt,
@@ -80,4 +80,23 @@ func (c *cDemo) Delete(ctx context.Context, req *v1.DemoDeleteReq) (*v1.DemoDele
 	err := service.Demo().Delete(ctx, req.ID)
 
 	return nil, err
+}
+
+func (c *cDemo) List(ctx context.Context, req *v1.DemoListReq) (*v1.DemoListRes, error) {
+	res, err := service.Demo().List(ctx, model.DemoListInput{
+		PageNum:  req.PageNum,
+		PageSize: req.PageSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.DemoListRes{
+		CommonPaginationRes: v1.CommonPaginationRes{
+			Total:    res.Total,
+			PageNum:  res.PageNum,
+			PageSize: res.PageSize,
+		},
+		List: res.List,
+	}, nil
 }
