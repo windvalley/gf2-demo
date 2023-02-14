@@ -23,9 +23,9 @@ gfcli:
         descriptionTag: true # 用于指定是否为数据模型结构体属性增加desription的标签, 内容为对应的数据表字段注释. 默认 false
         noModelComment: true # 用于指定是否关闭数据模型结构体属性的注释自动生成, 内容为数据表对应字段的注释. 默认 false
         jsonCase: "snake" # 指定model中生成的数据实体对象中json标签名称规则. 默认 CamelLower
-        clear: true # 自动删除数据库中不存在对应数据表的本地dao/do/entity代码文件, 默认 false. 线上环境应设置为fasle
+        clear: true # 自动删除数据库中不存在对应数据表的本地dao/do/entity代码文件, 默认 false. NOTE: 线上环境应设置为 fasle
 
     # doc: https://goframe.org/pages/viewpage.action?pageId=49770772
     service:
-      clear: true # 自动删除logic中不存在的接口文件(仅删除自动维护的文件), 默认 false
+      clear: true # 自动删除在logic中不存在的service接口文件(仅删除自动维护的文件), 默认 false
 

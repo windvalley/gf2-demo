@@ -1,3 +1,4 @@
+# doc: https://goframe.org/pages/viewpage.action?pageId=44449486
 server:
   address: ":9002"
   keepAlive: true # 是否开启Keep-Alive功能. 默认true
@@ -30,13 +31,14 @@ server:
 
   # 针对服务日志的扩展配置
   logger:
-    ctxKeys: ["user", "mail"] # 自动打印Context的指定变量到日志中. 默认为空
+    ctxKeys: ["user", "mail"]
     rotateExpire: "1d"
     rotateBackupExpire: "30d"
     rotateBackupLimit: 30
     rotateCheckInterval: "1h"
 
 # 开发者通过g.Log()打印的通用日志, 对server服务日志无效
+# doc: https://goframe.org/pages/viewpage.action?pageId=1114388
 logger:
   path: "logs/" # 日志文件目录, 如果为空, 表示不记录到文件
   file: "{Y-m-d}.log" # 日志文件格式. 默认为"{Y-m-d}.log"
@@ -50,12 +52,12 @@ logger:
   rotateBackupExpire: "30d" # 删除超过多长时间的切分文件, 默认为0, 表示不备份, 切分则删除. 如果启用按时间备份, rotateBackupLimit 必须设置为一个相对较大的数
   rotateBackupLimit: 30 # 最多保留多少个切分文件, 但rotateBackupExpire的配置优先. 默认为0, 表示不备份, 切分则删除. 可以不设置rotateBackupExpire
   rotateCheckInterval: "1h" # 滚动切分的时间检测间隔, 一般不需要设置. 默认为1小时
-  format: "" # "json" or other, 也对server服务日志生效
+  format: "" # "json" or other, NOTE: 此为自定义选项, 非gf提供, 也对server服务日志和sql日志生效
 
   # 为子项目gf2-demo-cli配置独立的logger
   cli:
     path: "logs/"
-    file: "cli_{Y-m-d}.log"
+    file: "cli-{Ymd}.log"
     level: "all"
     stStatus: 1
     stdout: true
@@ -66,3 +68,21 @@ logger:
     rotateBackupLimit: 30
     rotateCheckInterval: "1h"
     format: ""
+
+# doc: https://goframe.org/pages/viewpage.action?pageId=1114245
+database:
+  # sql日志
+  logger:
+    path: "logs/"
+    file: "sql-{Ymd}.log"
+    level: "all"
+    stdout: true
+    ctxKeys: ["user", "mail"]
+    rotateExpire: "1d"
+    rotateBackupExpire: "30d"
+    rotateBackupLimit: 30
+    rotateCheckInterval: "1h"
+
+  default:
+    link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2_demo"
+    debug: true # 默认 false
