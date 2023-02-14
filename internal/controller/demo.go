@@ -91,12 +91,18 @@ func (c *cDemo) List(ctx context.Context, req *v1.DemoListReq) (*v1.DemoListRes,
 		return nil, err
 	}
 
+	list := res.List
+	if len(list) == 0 {
+		// 避免返回的空数组为null
+		list = []model.DemoListOutputItem{}
+	}
+
 	return &v1.DemoListRes{
 		CommonPaginationRes: v1.CommonPaginationRes{
 			Total:    res.Total,
 			PageNum:  res.PageNum,
 			PageSize: res.PageSize,
 		},
-		List: res.List,
+		List: list,
 	}, nil
 }
