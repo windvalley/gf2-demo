@@ -5,8 +5,8 @@ var (
 	CodeOK          = New(200, "OK", "")
 	CodePartSuccess = New(202, "PartSuccess", "part success")
 
-	CodeNotAuthorized    = New(401, "NotAuthorized", "resource is not authorized")
-	CodePermissionDenied = New(403, "PermissionDenied", "permission denied")
+	CodePermissionDenied = New(401, "AuthFailed", "authentication failed")
+	CodeNotAuthorized    = New(403, "NotAuthorized", "resource is not authorized")
 	CodeNotFound         = New(404, "NotFound", "resource does not exist")
 	CodeValidationFailed = New(400, "ValidationFailed", "validation failed")
 	CodeNotAvailable     = New(400, "NotAvailable", "not available")
