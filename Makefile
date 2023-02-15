@@ -1,10 +1,17 @@
+# References:
+# https://seisman.github.io/how-to-write-makefile/index.html
+
 ROOT_DIR    = $(shell pwd)
 NAMESPACE   = "default"
-DEPLOY_NAME = "gf2-demo-api"
-DOCKER_NAME = "gf2-demo-api"
 
-APISERVER_CMD = cmd/gf2-demo-api/gf2-demo-api.go
-CLI_CMD = cmd/gf2-demo-cli/gf2-demo-cli.go
+APISERVER_NAME = gf2-demo-api
+CLI_NAME = gf2-demo-cli
+
+DEPLOY_NAME = ${APISERVER_NAME}
+DOCKER_NAME = ${APISERVER_NAME}
+
+APISERVER_PATH = cmd/gf2-demo-api/${APISERVER_NAME}.go
+CLI_PATH = cmd/gf2-demo-cli/${CLI_NAME}.go
 
 VERSION = $(shell git describe --tags --always --match='v*')
 
@@ -13,7 +20,11 @@ ifeq ($(shell uname), Darwin)
 	SED = gsed
 endif
 
-# Install/Update to the latest CLI tool.
+
+# Print help information by default.
+.DEFAULT_GOAL := help
+
+##  cli: Install/Update to the latest CLI tool.
 .PHONY: cli
 cli:
 	@set -e; \
@@ -32,43 +43,43 @@ cli.install:
 		make cli; \
 	fi;
 
-# Generate Go files for DAO/DO/Entity.
+##  dao: Generate Go files for Dao/Do/Entity.
 .PHONY: dao
 dao: cli.install
 	@echo "******** gf gen dao ********"
 	@GF_GCFG_FILE=config.yaml gf gen dao
 
-# Generate Go files for Service.
+##  service: Generate Go files for Service.
 .PHONY: service
 service: cli.install
 	@echo "******** gf gen service ********"
 	@gf gen service
 
-# Run apiserver for development environment.
+##  run: Run gf2-demo-api for development environment.
 .PHONY: run
 run: cli.install dao service
-	@echo "******** gf run ${APISERVER_CMD} ********"
-	@gf run ${APISERVER_CMD}
+	@echo "******** gf run ${APISERVER_PATH} ********"
+	@gf run ${APISERVER_PATH}
 
-# Run cli for development environment.
+##  run.cli: Run gf2-demo-cli for development environment.
 .PHONY: run.cli
 run.cli: cli.install dao service
-	@echo "******** gf run ${CLI_CMD} ********"
-	@gf run ${CLI_CMD}
+	@echo "******** gf run ${CLI_PATH} ********"
+	@gf run ${CLI_PATH}
 
-# Build apiserver binary.
+##  build: Build gf2-demo-api binary.
 .PHONY: build
 build: cli.install dao service
-	@echo "******** gf build ${APISERVER_CMD} ********"
+	@echo "******** gf build ${APISERVER_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@gf build ${APISERVER_CMD}
+	@gf build ${APISERVER_PATH}
 
-# Build cli binary.
+##  build.cli: Build gf2-demo-cli binary.
 .PHONY: build.cli
 build.cli: cli.install dao service
-	@echo "******** gf build ${CLI_CMD} ********"
+	@echo "******** gf build ${CLI_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@gf build ${CLI_CMD}
+	@gf build ${CLI_PATH}
 
 # Build image, deploy image and yaml to current kubectl environment and make port forward to local machine.
 .PHONY: start
@@ -109,3 +120,8 @@ deploy:
 	kubectl   patch -n $(NAMESPACE) deployment/$(DEPLOY_NAME) -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"$(shell date +%s)\"}}}}}";
 
 
+##  help: Show this help.
+.PHONY: help
+help: Makefile
+	@echo "\nUsage: \n\n    make [TARGETS] \n\nTargets:\n"
+	@${SED} -n 's/^##//p' $< | column -t -s ':' | ${SED} -e 's/^/ /'
