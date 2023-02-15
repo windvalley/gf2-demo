@@ -16,6 +16,7 @@
 - 编译的二进制文件可打印当前应用的版本信息
 - 完整的增删改查接口示例, 帮助快速上手
 - 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
+- 适合个人开发者高质量完成项目, 也适合团队统一后端技术框架, 规范高效管理
 
 ## 🚀 Quick Start
 
@@ -544,7 +545,7 @@ logger:
   # 为子项目gf2-demo-cli配置独立的logger
   cli:
     path: "logs/"
-    file: "cli_{Y-m-d}.log"
+    file: "cli-{Ymd}.log"
     level: "all"
     stStatus: 1
     stdout: true
@@ -562,10 +563,11 @@ logger:
 ```go
 // gf2-demo-api的日志
 g.Log().Info(ctx, "hello world")
-g.Log().Errorf(ctx, "xxx failed")
+g.Log().Errorf(ctx, "hello %s", "world")
+
 // gf2-demo-cli的日志
 g.Log("cli").Debug(ctx, "hello world")
-g.Log("cli").Warningf(ctx, "warning message")
+g.Log("cli").Warningf(ctx, "hello %s", "world")
 ```
 
 ##### 3. 生成的日志示例
@@ -586,8 +588,6 @@ g.Log("cli").Warningf(ctx, "warning message")
 
 - 服务内部如果需要调用其他服务的接口, 请使用 `g.Client()`, 因为他会给请求自动注入`Trace-Id`, 这样不同 API 服务之间的日志就可以通过 `Trace-Id` 串起来了.
 
-> NOTE:
->
 > 参考: https://goframe.org/pages/viewpage.action?pageId=49745257
 
 ### 版本管理 [⌅](#-documentation)
@@ -595,6 +595,25 @@ g.Log("cli").Warningf(ctx, "warning message")
 #### 1. 写版本变更文档
 
 `vi CHANGELOG.md`
+
+```text
+## v0.3.0
+
+### Added
+
+- xxx
+- xxx
+
+### Changed
+
+- xxx
+- xxx
+
+### Fixed
+
+- xxx
+- xxx
+```
 
 #### 2. 给项目仓库打 tag
 
@@ -753,7 +772,7 @@ type DemoCreateOutput struct {
 
 #### 5. 编写 service 层代码
 
-1. 编写具体的业务实现(`internal/logic/`)
+##### a. 编写具体的业务实现(`internal/logic/`)
 
 调用数据访问层(`internal/dao/`), 编写具体的业务逻辑. 这里是业务逻辑的重心, 绝大部分的业务逻辑都应该在这里编写.
 
@@ -796,13 +815,13 @@ func (s *sDemo) Create(ctx context.Context, in model.DemoCreateInput) (*model.De
 }
 ```
 
-2. 自动生成 service 接口代码(`internal/service/`)
+##### b. 自动生成 service 接口代码(`internal/service/`)
 
 ```sh
 $ make service
 ```
 
-3. 将业务实现注入到服务接口(依赖注入)
+##### c. 将业务实现注入到服务接口(依赖注入)
 
 示例:
 
@@ -818,7 +837,7 @@ func init() {
 }
 ```
 
-4. 程序启动时自动注册服务
+##### d. 程序启动时自动注册服务
 
 在程序入口文件 `cmd/gf2-demo-api/gf2-demo-api.go` 中导入 logic 包.
 
@@ -989,10 +1008,8 @@ $ make build
 bin
 ├── darwin_amd64
 │   └── new-project-api
-│   └── new-project-cli
 └── linux_amd64
     └── new-project-api
-    └── new-project-cli
 ```
 
 ## 📜 References

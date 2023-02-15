@@ -19,20 +19,6 @@ var (
 type cDemo struct{}
 
 func (c *cDemo) Get(ctx context.Context, req *v1.DemoGetReq) (*v1.DemoGetRes, error) {
-	// 调用其他HTTP服务测试
-	// foo := g.Client().GetContent(ctx, "http://localhost:8000/v1/hello")
-
-	// 通用日志打印测试
-	// g.Log().Info(ctx, "hello world")
-	// g.Log().Errorf(ctx, "xxx failed")
-
-	// panic错误测试
-	// panic("panic test")
-
-	// 自定义错误测试
-	// err = errors.New("no permission")
-	// err = gerror.WrapCode(codes.CodeNotAuthorized, err)
-
 	demoInfo, err := service.Demo().Get(ctx, req.Fielda)
 	if err != nil {
 		return nil, err
