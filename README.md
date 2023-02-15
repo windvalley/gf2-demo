@@ -10,11 +10,12 @@
 ## 💌 Features
 
 - 优化工程目录结构, 使支持多个可执行命令
-- 规范业务错误码, 中间件统一拦截响应, 规范响应格式
-- 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
 - 多环境管理: 开发环境、测试环境、生产环境
 - 编译的二进制文件可打印当前应用的版本信息
-- 完整的增删改查接口示例, 帮助快速上手
+- 中间件统一拦截响应, 规范响应格式, 规范业务错误码
+- 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
+- 完整的增删改查接口示例和完善的开发流程文档, 帮助开发者快速上手
+- 项目部署遵循不可变基础设施原则, 不论是传统单体部署还是容器云部署方式
 - 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
 - 适合个人开发者高质量完成项目, 也适合团队统一后端技术框架, 规范高效管理
 
@@ -163,6 +164,9 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [7. 路由注册](#7-路由注册)
   - [8. 接口访问测试](#8-接口访问测试)
 - [项目部署](#项目部署-)
+  - [Systemctl](#Systemctl)
+  - [Supervisor](#Supervisor)
+  - [Docker](#Docker)
 - [使用 Makefile 管理项目](#使用-makefile-管理项目-)
 - [变更项目名称](#变更项目名称-)
 
@@ -230,7 +234,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │   ├── config.test.yaml  # 测试环境
 │   │   └── config.yaml  # 开发环境
 │   ├── deploy  # 和部署相关的文件
-│   │   └── kustomize
+│   │   └── kustomize  # Kubernetes集群化部署的Yaml模板, 通过kustomize管理
 │   │       ├── base
 │   │       │   ├── deployment.yaml
 │   │       │   ├── kustomization.yaml
@@ -948,12 +952,40 @@ Content-Length: 88
 
 ### 项目部署 [⌅](#-documentation)
 
-> 参考: https://goframe.org/pages/viewpage.action?pageId=1114403
+#### Systemctl
+
+1. 相关的配置文件及脚本
+
+   - 生产环境 systemctl 服务配置文件: `manifest/deploy/systemctl/gf2-demo-api.service`
+   - 测试环境 systemctl 服务配置文件: `manifest/deploy/systemctl/gf2-demo-api_test.service`
+   - 部署脚本: `manifest/deploy/systemctl/deploy.sh`
+
+2. 设置目标服务器(修改 `deploy.sh` 脚本)
+
+```sh
+# 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
+deploy_server="gf2-demo.sre.im"
+# 用于连接目标服务器的用户名
+deploy_user="vagrant"
+```
+
+3. 部署
+
+```sh
+# 部署测试环境
+./manifest/deploy/systemctl/deploy.sh test
+
+# 部署生产环境
+./manifest/deploy/systemctl/deploy.sh prod
+```
+
+> NOTE: 以上示例基于 CentOS7 系统部署
+
+#### Supervisor
+
+#### Docker
 
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
-
-> NOTE:
-> 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
 
 ```sh
 # 安装最新版gf
@@ -977,6 +1009,9 @@ make build
 # 编译 gf2-demo-cli
 make build.cli
 ```
+
+> NOTE:
+> 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
 
 ### 变更项目名称 [⌅](#-documentation)
 
