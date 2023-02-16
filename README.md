@@ -234,20 +234,28 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │   ├── config.test.yaml  # 测试环境
 │   │   └── config.yaml  # 开发环境
 │   ├── deploy  # 和部署相关的文件
-│   │   └── kustomize  # Kubernetes集群化部署的Yaml模板, 通过kustomize管理
-│   │       ├── base
-│   │       │   ├── deployment.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   └── service.yaml
-│   │       └── overlays
-│   │           └── develop
-│   │               ├── configmap.yaml
-│   │               ├── deployment.yaml
-│   │               └── kustomization.yaml
+│   │   ├── kustomize  # Kubernetes集群化部署的Yaml模板, 通过kustomize管理
+│   │   │   ├── base
+│   │   │   │   ├── deployment.yaml
+│   │   │   │   ├── kustomization.yaml
+│   │   │   │   └── service.yaml
+│   │   │   └── overlays
+│   │   │       └── develop
+│   │   │           ├── configmap.yaml
+│   │   │           ├── deployment.yaml
+│   │   │           └── kustomization.yaml
+│   │   ├── supervisor  # 通过 supervisor 管理服务
+│   │   │   ├── deploy.sh  # 一键部署脚本
+│   │   │   ├── gf2-demo-api.ini  # 本项目生产环境supervisor配置文件
+│   │   │   └── gf2-demo-api_test.ini  # 本项目测试环境supervisor配置文件
+│   │   └── systemctl  # 通过systemctl管理服务
+│   │       ├── deploy.sh  # 一键部署脚本
+│   │       ├── gf2-demo-api.service  # 生产环境服务文件
+│   │       └── gf2-demo-api_test.service  # 测试环境服务文件
 │   └── docker  # Docker镜像相关依赖文件, 脚本文件等等
 │       ├── Dockerfile
 │       └── docker.sh
-├── resource  # 静态资源文件: 这些文件往往可以通过资源打包/镜像编译的形式注入到发布文件中
+├── resource  # 静态资源文件: 这些文件往往可以通过资源打包/镜像编译的形式注入到发布文件中, 纯后端api服务一般用不到此目录
 │   ├── i18n
 │   ├── public
 │   │   ├── html
@@ -579,11 +587,11 @@ g.Log("cli").Warningf(ctx, "hello %s", "world")
 ```sh
 # 普通格式
 2023-02-08 17:02:31.906 [INFO] {389b4e7aeccd41175dd0bc18211c2519} {windvalley, windvalley@sre.im} /Users/xg/github/gf2-demo/internal/controller/hello.go:33: hello world
-2023-02-08 17:02:31.906 [ERRO] {389b4e7aeccd41175dd0bc18211c2519} {windvalley, windvalley@sre.im} /Users/xg/github/gf2-demo/internal/controller/hello.go:34: xxx failed
+2023-02-08 17:02:31.906 [ERRO] {389b4e7aeccd41175dd0bc18211c2519} {windvalley, windvalley@sre.im} /Users/xg/github/gf2-demo/internal/controller/hello.go:34: hello world
 
 # json格式
 {"Time":"2023-02-08 17:04:08.957","TraceId":"d0e7f61203ce41171374033689322f91","CtxStr":"windvalley, windvalley@sre.im","Level":"INFO","CallerPath":"/Users/xg/github/gf2-demo/internal/controller/hello.go:33:","Content":"hello world"}
-{"Time":"2023-02-08 17:04:08.957","TraceId":"d0e7f61203ce41171374033689322f91","CtxStr":"windvalley, windvalley@sre.im","Level":"ERRO","CallerPath":"/Users/xg/github/gf2-demo/internal/controller/hello.go:34:","Content":"xxx failed"}
+{"Time":"2023-02-08 17:04:08.957","TraceId":"d0e7f61203ce41171374033689322f91","CtxStr":"windvalley, windvalley@sre.im","Level":"ERRO","CallerPath":"/Users/xg/github/gf2-demo/internal/controller/hello.go:34:","Content":"hello world"}
 ```
 
 ### 链路跟踪 [⌅](#-documentation)
@@ -712,7 +720,7 @@ $ mysql -uroot -p'123456' < manifest/sql/demo.sql
 # hack/config.yaml
 gfcli:
   gen:
-    # https://goframe.org/pages/viewpage.action?pageId=3673173
+    # doc: https://goframe.org/pages/viewpage.action?pageId=3673173
     dao:
       - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2_demo"
         tables: "" # 指定当前数据库中需要执行代码生成的数据表, 多个以逗号分隔. 如果为空, 表示数据库的所有表都会生成. 默认为空
@@ -969,45 +977,123 @@ deploy_server="gf2-demo.sre.im"
 deploy_user="vagrant"
 ```
 
-3. 部署
+3. 执行部署
 
 ```sh
 # 部署测试环境
-./manifest/deploy/systemctl/deploy.sh test
+$ ./manifest/deploy/systemctl/deploy.sh test
 
 # 部署生产环境
-./manifest/deploy/systemctl/deploy.sh prod
+$ ./manifest/deploy/systemctl/deploy.sh prod
 ```
 
-> NOTE: 以上示例基于 CentOS7 系统部署
+4. 验证
+
+首先登录到目标服务器.
+
+```sh
+# 默认项目的所有标准输出都会在message文件中,
+# 如果不想在message文件中产生业务日志,
+# 可在项目配置文件中关闭日志的标准输出.
+$ tail -f /var/log/message
+
+# 项目常规日志, 包括通过g.Log()打印的日志.
+$ tail -f /usr/local/gf2-demo/logs/2023-02-15.log
+
+# 项目HTTP服务访问日志
+$ tail -f /usr/local/gf2-demo/logs/access-20230215.log
+
+# 项目HTTP服务错误日志
+$ tail -f /usr/local/gf2-demo/logs/error-20230215.log
+
+# sql debug 日志
+$ tail -f /usr/local/gf2-demo/logs/sql-20230215.log
+```
+
+> NOTE:
+>
+> - 此示例为单台部署, 若部署集群可使用 `gossh`、`ansible` 等工具.
+> - 服务器操作系统: `CentOS7.x`, 其他系统类型未验证.
 
 #### Supervisor
+
+1. 相关的配置文件及脚本
+
+   - 生产环境 supervisor 配置文件: `manifest/deploy/supervisor/gf2-demo-api.ini`
+   - 测试环境 supervisor 服务配置文件: `manifest/deploy/supervisor/gf2-demo-api_test.ini`
+   - 部署脚本: `manifest/deploy/supervisor/deploy.sh`
+
+2. 设置目标服务器(修改 `deploy.sh` 脚本)
+
+```sh
+# 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
+deploy_server="gf2-demo.sre.im"
+# 用于连接目标服务器的用户名
+deploy_user="vagrant"
+# 项目部署目录
+deploy_dir=/app/$project_name
+```
+
+3. 在目标服务器上提前安装 supervisor
+
+基于 CentOS7 系统演示.
+
+```sh
+yum update -y
+yum install epel-release -y
+yum install supervisor -y
+
+systemctl enable supervisord
+systemctl start supervisord
+systemctl status supervisord
+
+echo_supervisord_conf > /etc/supervisord.conf
+cat >> /etc/supervisord.conf <<EOF
+[include]
+files = supervisord.d/*.ini
+EOF
+
+mkdir -p /etc/supervisord.d
+```
+
+4. 执行部署
+
+```sh
+# 部署测试环境
+$ ./manifest/deploy/supervisor/deploy.sh test
+
+# 部署生产环境
+$ ./manifest/deploy/supervisor/deploy.sh prod
+```
 
 #### Docker
 
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
 
 ```sh
+# 查看帮助
+$ make/make help
+
 # 安装最新版gf
-make cli
+$ make cli
 
 # 物理表有增加或表结构有更新时, 自动生成或更新数据层相关代码
-make dao
+$ make dao
 
 # internal/logic/ 有代码变动后, 使用此命令自动生成 internal/service/ 接口代码
-make service
+$ make service
 
 # 开发环境热启动 gf2-demo-api
-make run
+$ make run
 
 # 开发环境热启动 gf2-demo-cli
-make run.cli
+$ make run.cli
 
 # 编译 gf2-demo-api
-make build
+$ make build
 
 # 编译 gf2-demo-cli
-make build.cli
+$ make build.cli
 ```
 
 > NOTE:
@@ -1049,6 +1135,7 @@ bin
 
 ## 📜 References
 
+- https://github.com/gogf/gf
 - https://goframe.org/display/gf
 - https://pkg.go.dev/github.com/gogf/gf/v2
 
