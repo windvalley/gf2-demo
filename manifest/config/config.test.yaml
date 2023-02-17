@@ -1,6 +1,6 @@
 # doc: https://goframe.org/pages/viewpage.action?pageId=44449486
 server:
-  address: ":9001"
+  address: ":9000"
   keepAlive: true # 是否开启Keep-Alive功能. 默认true
   idleTimeout: "60s" # 仅当Keep-Alive开启时有效, 请求闲置时间. 默认为60秒
   maxHeaderBytes: "10240" # 请求Header大小限制(Byte). 默认为10KB
