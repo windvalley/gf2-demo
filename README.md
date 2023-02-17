@@ -3,7 +3,6 @@
 [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://go.dev)
 [![Version](https://img.shields.io/github/v/release/windvalley/gf2-demo?include_prereleases)](https://github.com/windvalley/gf2-demo/releases)
 [![LICENSE](https://img.shields.io/github/license/windvalley/gf2-demo)](LICENSE)
-![Page Views](https://views.whatilearened.today/views/github/windvalley/gf2-demo.svg)
 
 `gf2-demo` 是一个基于 [GoFrameV2](https://github.com/gogf/gf) 用来快速开发后端服务的脚手架, 目标使开发者只需关注业务逻辑的编写, 快速且规范地交付项目.
 
@@ -173,6 +172,10 @@ Find more information at: https://github.com/windvalley/gf2-demo
 ### 工程目录 [⌅](#-documentation)
 
 ```sh
+├── CHANGELOG.md  # 版本变更管理
+├── Dockerfile  # 用于制作容器镜像
+├── Makefile  # 用于项目管理
+├── README.md  # 项目文档
 ├── api  # 对外接口定义: 对外提供服务的输入/输出数据结构定义, 路由path定义, 数据校验等
 │   └── v1
 │       └── demo.go
@@ -252,9 +255,8 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │       ├── deploy.sh  # 一键部署脚本
 │   │       ├── gf2-demo-api.service  # 生产环境服务文件
 │   │       └── gf2-demo-api_test.service  # 测试环境服务文件
-│   └── docker  # Docker镜像相关依赖文件, 脚本文件等等
-│       ├── Dockerfile
-│       └── docker.sh
+│   └── sql
+│       └── gf2_demo.sql  # 用于创建示例表的sql文件
 ├── resource  # 静态资源文件: 这些文件往往可以通过资源打包/镜像编译的形式注入到发布文件中, 纯后端api服务一般用不到此目录
 │   ├── i18n
 │   ├── public
@@ -1067,6 +1069,51 @@ $ ./manifest/deploy/supervisor/deploy.sh prod
 ```
 
 #### Docker
+
+1. 制作容器镜像
+
+```sh
+cd gf2-demo
+
+# 编译二进制文件
+$ make build
+
+# 制作容器镜像
+$ docker build -t gf2-demo .
+```
+
+2. 运行容器
+
+```sh
+# 开发环境
+$ docker run --name gf2-demo -p80:9000 -d gf2-demo
+
+# 测试环境
+$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.test.yaml -d gf2-demo
+
+# 生产环境
+$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-demo
+```
+
+3. 验证
+
+- 查看是否成功运行:  
+  浏览器访问 `http://localhost/swagger`, 参看 api 文档是否正常展示.
+
+- 查看不同环境下, 程序使用的配置文件是否正确
+
+```sh
+# 查看容器输出的日志
+$ docker logs gf2-demo
+
+# 如果配置了日志保存到文件, 也可登录到容器内部进行查看.
+$ docker exec -it gf2-demo sh
+
+# 输出的部分日志截取:
+2023-02-17 18:52:36.568 [DEBU] {7f0f8d5a279744179740f477f49fbd06} /Users/xg/github/gf2-demo/internal/cmd/apiserver/apiserver.go:79: use config file: &{defaultName:config searchPaths:0xc0000bf6e0 jsonMap:0xc000303720 violenceCheck:false}
+```
+
+上面日志中的 `defaultName` 如果为 `config`, 代表开发环境; 为 `config.test.yaml`, 代表测试环境; 为 `config.prod.yaml`, 代表生产环境.
 
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
 

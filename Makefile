@@ -24,7 +24,7 @@ endif
 # Print help information by default.
 .DEFAULT_GOAL := help
 
-##  cli: Install/Update to the latest CLI tool.
+##  cli: Install/Update to the latest Gf Cli tool.
 .PHONY: cli
 cli:
 	@set -e; \

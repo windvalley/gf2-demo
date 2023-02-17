@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.7.0
+
+### Added
+
+- 增加通过 `systemctl` 一键部署方式
+- 增加通过 `supervisor` 一键部署方式
+- 增加 `Dockerfile`
+
+### Changed
+
+- 进一步完善 README.md 文档
+
+### Removed
+
+- 删除了 `manifest/docker/`
+
 ## v0.6.1
 
 ### Added
