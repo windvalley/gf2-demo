@@ -21,10 +21,10 @@ ifeq ($(shell uname), Darwin)
 endif
 
 
-# Print help information by default.
+# Print help information by default
 .DEFAULT_GOAL := help
 
-##  cli: Install/Update to the latest Gf Cli tool.
+##  cli: Install/Update to the latest Gf Cli tool
 .PHONY: cli
 cli:
 	@set -e; \
@@ -34,7 +34,7 @@ cli:
 	rm ./gf
 
 
-# Check and install CLI tool.
+# Check and install CLI tool
 .PHONY: cli.install
 cli.install:
 	@set -e; \
@@ -43,45 +43,45 @@ cli.install:
 		make cli; \
 	fi;
 
-##  dao: Generate Go files for Dao/Do/Entity.
+##  dao: Generate Go files for Dao/Do/Entity
 .PHONY: dao
 dao: cli.install
 	@echo "******** gf gen dao ********"
 	@GF_GCFG_FILE=config.yaml gf gen dao
 
-##  service: Generate Go files for Service.
+##  service: Generate Go files for Service
 .PHONY: service
 service: cli.install
 	@echo "******** gf gen service ********"
 	@gf gen service
 
-##  run: Run gf2-demo-api for development environment.
+##  run: Run gf2-demo-api for development environment
 .PHONY: run
 run: cli.install dao service
 	@echo "******** gf run ${APISERVER_PATH} ********"
 	@gf run ${APISERVER_PATH}
 
-##  run.cli: Run gf2-demo-cli for development environment.
+##  run.cli: Run gf2-demo-cli for development environment
 .PHONY: run.cli
 run.cli: cli.install dao service
 	@echo "******** gf run ${CLI_PATH} ********"
 	@gf run ${CLI_PATH}
 
-##  build: Build gf2-demo-api binary.
+##  build: Build gf2-demo-api binary
 .PHONY: build
-build: cli.install dao service
+build: cli.install service
 	@echo "******** gf build ${APISERVER_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@gf build ${APISERVER_PATH}
 
-##  build.cli: Build gf2-demo-cli binary.
+##  build.cli: Build gf2-demo-cli binary
 .PHONY: build.cli
-build.cli: cli.install dao service
+build.cli: cli.install service
 	@echo "******** gf build ${CLI_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@gf build ${CLI_PATH}
 
-# Build image, deploy image and yaml to current kubectl environment and make port forward to local machine.
+# Build image, deploy image and yaml to current kubectl environment and make port forward to local machine
 .PHONY: start
 start:
 	@set -e; \
@@ -89,7 +89,7 @@ start:
 	make deploy; \
 	make port;
 
-# Build docker image.
+# Build docker image
 .PHONY: image
 image: cli.install
 	$(eval _TAG  = $(shell git log -1 --format="%cd.%h" --date=format:"%Y%m%d%H%M%S"))
@@ -101,13 +101,13 @@ endif
 	@gf docker -p -b "-a amd64 -s linux -p temp" -tn $(DOCKER_NAME):${_TAG};
 
 
-# Build docker image and automatically push to docker repo.
+# Build docker image and automatically push to docker repo
 .PHONY: image.push
 image.push:
 	@make image PUSH=-p;
 
 
-# Deploy image and yaml to current kubectl environment.
+# Deploy image and yaml to current kubectl environment
 .PHONY: deploy
 deploy:
 	$(eval _TAG = $(if ${TAG},  ${TAG}, develop))
@@ -120,7 +120,7 @@ deploy:
 	kubectl   patch -n $(NAMESPACE) deployment/$(DEPLOY_NAME) -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"$(shell date +%s)\"}}}}}";
 
 
-##  help: Show this help.
+##  help: Show this help
 .PHONY: help
 help: Makefile
 	@echo "\nUsage: \n\n    make [TARGETS] \n\nTargets:\n"

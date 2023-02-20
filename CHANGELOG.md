@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.7.1
+
+### Changed
+
+- 优化 Dockerfile, 暴露编译过程, 使用两阶段构建, 依赖包可缓存, 编译速度快
+- 优化 Makefile 文件
+- GoFrame V2.3.1 -> V2.3.2
+
 ## v0.7.0
 
 ### Added
