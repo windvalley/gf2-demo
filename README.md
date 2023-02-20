@@ -1073,12 +1073,8 @@ $ ./manifest/deploy/supervisor/deploy.sh prod
 1. 制作容器镜像
 
 ```sh
-cd gf2-demo
+$ cd gf2-demo
 
-# 编译二进制文件
-$ make build
-
-# 制作容器镜像
 $ docker build -t gf2-demo .
 ```
 
@@ -1099,6 +1095,19 @@ $ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-d
 
 - 查看是否成功运行:  
   浏览器访问 `http://localhost/swagger`, 参看 api 文档是否正常展示.
+
+- 查看二进制应用版本信息
+
+```sh
+$ docker exec -it gf2-demo ./gf2-demo-api -v
+
+# 输出如下:
+App Version: v0.7.0
+Git Commit:  2023-02-17 19:32:05 95390e39485aa29050c2327c263a732267ec3eb3
+Build Time:  2023-02-20 06:18:57
+Go Version:  go1.17.13
+GF Version:  v2.3.2
+```
 
 - 查看不同环境下, 程序使用的配置文件是否正确
 
