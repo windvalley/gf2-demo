@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.7.2
+
+### Changed
+
+- 进一步优化 Dockerfile, 提高编译速度
+- 优化 Makefile
+  - 增加参数 OS 和 ARCH, 用于灵活 `make build`
+  - 优化 `make image`, 制作 docker 镜像
+  - 优化 `make image.push`, 制作 docker 镜像并推送到 docker 仓库
+  - 增加 TAG 参数, 用于灵活 `make image`
+  - 优化 make 帮助信息: `make` / `make help`
+- 优化 README.md 文档
+
 ## v0.7.1
 
 ### Changed

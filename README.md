@@ -296,6 +296,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 > NOTE:
 >
 > - 通过命令行参数指定配置文件优先于环境变量.
+> - -c 参数指定的配置文件可以使用绝对路径, 如果不包含路径, 默认依次在如下路径搜索配置文件: `./`(二进制所在的当前目录) > `./config/` > `./manifest/config/`.
 > - `GF_GERROR_BRIEF=true` 表示 HTTP 服务日志错误堆栈中不包含 gf 框架堆栈.
 > - 配置文件在通过 `make build` 或 `make build.cli` 编译时已经打包到二进制文件中, 所以在部署时只需部署二进制文件即可.
 
@@ -1070,28 +1071,72 @@ $ ./manifest/deploy/supervisor/deploy.sh prod
 
 #### Docker
 
-1. 制作容器镜像
+1. Dockerfile
+
+采用两阶段构建, 镜像体积小; 将依赖库下载剥离出来并且前置, 利用缓存特性提高编译速度.
+
+```dockerfile
+# syntax=docker/dockerfile:1
+
+# Step 1: build binary
+FROM golang:1.17 as builder
+
+ENV GOPROXY https://goproxy.cn,direct
+
+WORKDIR /src
+
+# pre-copy/cache go.mod for pre-downloading dependencies and
+# only redownloading them in subsequent builds if they change
+COPY Makefile ./
+RUN make cli
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+COPY . .
+RUN make build OS="linux"
+
+
+# Step 2: copy binary from step 1
+FROM loads/alpine:3.8
+
+ENV GF_GERROR_BRIEF=true
+
+WORKDIR /app
+
+COPY --from=builder /src/bin/linux_amd64/gf2-demo-api .
+
+EXPOSE 9000
+
+ENTRYPOINT [ "./gf2-demo-api" ]
+```
+
+2. 制作容器镜像
 
 ```sh
 $ cd gf2-demo
 
-$ docker build -t gf2-demo .
+$ make image
+
+$ docker image ls
+
+REPOSITORY          TAG                            IMAGE ID       CREATED          SIZE
+gf2-demo-api        20230221113306.0d26121.dirty   58e6953c2e1b   15 seconds ago   30.1MB
 ```
 
-2. 运行容器
+3. 运行容器
 
 ```sh
 # 开发环境
-$ docker run --name gf2-demo -p80:9000 -d gf2-demo
+$ docker run --name gf2-demo -p80:9000 -d gf2-demo-api:20230221113306.0d26121.dirty
 
 # 测试环境
-$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.test.yaml -d gf2-demo
+$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.test.yaml -d gf2-demo-api:20230221113306.0d26121.dirty
 
 # 生产环境
-$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-demo
+$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-demo-api:20230221113306.0d26121.dirty
 ```
 
-3. 验证
+4. 验证
 
 - 查看是否成功运行:  
   浏览器访问 `http://localhost/swagger`, 参看 api 文档是否正常展示.
@@ -1127,9 +1172,43 @@ $ docker exec -it gf2-demo sh
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
 
 ```sh
-# 查看帮助
-$ make/make help
+$ make help
 
+Usage:
+
+    make [TARGETS] [OPTIONS]
+
+Targets:
+
+    cli          Install/Update to the latest Gf Cli tool
+    dao          Generate Go files for Dao/Do/Entity
+    service      Generate Go files for Service
+    run          Run gf2-demo-api for development environment
+    run.cli      Run gf2-demo-cli for development environment
+    build        Build gf2-demo-api binary
+    build.cli    Build gf2-demo-cli binary
+    image        Build docker image
+    image.push   Build docker image and automatically push to docker repo
+    help         Show this help
+
+Options:
+
+    ARCH         The multiple ARCH to build. Default is "amd64";
+                 This option is available for: make build*;
+                 Example: make build ARCH="amd64,arm64"
+
+    OS           The multiple OS to build. Default is "darwin,linux";
+                 This option is available for: make build*;
+                 Example: make build OS="linux,darwin,windows"
+
+    TAG          Docker image tag. Default is generated from current git commit;
+                 This option is available for: make image*;
+                 Example: make image TAG="v0.6.0"
+```
+
+使用示例:
+
+```sh
 # 安装最新版gf
 $ make cli
 
@@ -1145,11 +1224,23 @@ $ make run
 # 开发环境热启动 gf2-demo-cli
 $ make run.cli
 
-# 编译 gf2-demo-api
-$ make build
-
 # 编译 gf2-demo-cli
 $ make build.cli
+
+# 按照 hack/config.yaml 配置, 编译 gf2-demo-api
+$ make build
+
+# 编译 linux_arm64 架构的二进制文件
+$ make build OS="linux" ARCH="arm64"
+
+# 制作docker镜像: gf2-demo-api:20230220144044.2d4bb19.dirty
+$ make image
+
+# 自定义tag制作docker镜像: gf2-demo-api:v0.3.0
+$ make image TAG="v0.3.0"
+
+# 制作镜像并推送到docker仓库
+$ make image.push
 ```
 
 > NOTE:
