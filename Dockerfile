@@ -9,12 +9,13 @@ WORKDIR /src
 
 # pre-copy/cache go.mod for pre-downloading dependencies and 
 # only redownloading them in subsequent builds if they change
-COPY go.mod go.sum Makefile ./
-RUN go mod download && go mod verify
+COPY Makefile ./
 RUN make cli
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
 
 COPY . .
-RUN make build
+RUN make build OS="linux"
 
 
 # Step 2: copy binary from step 1
