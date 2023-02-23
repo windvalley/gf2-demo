@@ -978,6 +978,8 @@ Content-Length: 88
 deploy_server="gf2-demo.sre.im"
 # 用于连接目标服务器的用户名
 deploy_user="vagrant"
+# 项目部署目录
+deploy_dir=/app/$project_name
 ```
 
 3. 执行部署
@@ -995,22 +997,37 @@ $ ./manifest/deploy/systemctl/deploy.sh prod
 首先登录到目标服务器.
 
 ```sh
-# 默认项目的所有标准输出都会在message文件中,
-# 如果不想在message文件中产生业务日志,
-# 可在项目配置文件中关闭日志的标准输出.
-$ tail -f /var/log/message
+# 默认项目的所有标准输出和标准错误输出都会在此文件中.
+$ tail -f /app/gf2-demo/gf2-demo-api.log
 
 # 项目常规日志, 包括通过g.Log()打印的日志.
-$ tail -f /usr/local/gf2-demo/logs/2023-02-15.log
+$ tail -f /app/gf2-demo/logs/2023-02-15.log
 
 # 项目HTTP服务访问日志
-$ tail -f /usr/local/gf2-demo/logs/access-20230215.log
+$ tail -f /app/gf2-demo/logs/access-20230215.log
 
 # 项目HTTP服务错误日志
-$ tail -f /usr/local/gf2-demo/logs/error-20230215.log
+$ tail -f /app/gf2-demo/logs/error-20230215.log
 
 # sql debug 日志
-$ tail -f /usr/local/gf2-demo/logs/sql-20230215.log
+$ tail -f /app/gf2-demo/logs/sql-20230215.log
+```
+
+5. systemctl 常用命令
+
+```sh
+# gf2-demo-api.service 配置有变动的时候, 需要重新加载使生效
+$ sudo systemctl daemon-reload
+
+# 启动
+$ sudo systemctl start gf2-demo-api
+
+# 关闭: 发送 SIGTERM 信号给主(sh)和子进程(gf2-demo-api),
+# gf2-demo-api程序可通过捕捉SIGTERM信号来实现优雅关闭.
+$ sudo systemctl stop gf2-demo-api
+
+# 重启: 先关闭(SIGTERM), 再启动
+$ sudo systemctl restart gf2-demo-api
 ```
 
 > NOTE:
@@ -1067,6 +1084,24 @@ $ ./manifest/deploy/supervisor/deploy.sh test
 
 # 部署生产环境
 $ ./manifest/deploy/supervisor/deploy.sh prod
+```
+
+5. supervisorctl 常用命令
+
+```sh
+# 启动
+$ sudo supervisorctl start gf2-demo-api
+
+# 关闭(SIGTERM信号), 可捕SIGTERM信号, 实现优雅关闭
+$ sudo supervisorctl stop gf2-demo-api
+
+# 重启: 先关闭(SIGTERM信号), 再启动.
+# NOTE: /etc/supervisord.*相关配置有变动, 重启具体某服务并不会生效
+$ sudo supervisorctl restart gf2-demo-api
+
+# 重启 supervisor 控制的所有服务.
+# NOTE: 当 /etc/supervisord.*相关配置有变动, 必须执行此命令才能加载生效
+$ sudo supervisorctl reload
 ```
 
 #### Docker
@@ -1168,6 +1203,22 @@ $ docker exec -it gf2-demo sh
 ```
 
 上面日志中的 `defaultName` 如果为 `config`, 代表开发环境; 为 `config.test.yaml`, 代表测试环境; 为 `config.prod.yaml`, 代表生产环境.
+
+5. 如何优雅关闭
+
+```sh
+# 关闭: 会发送SIGTERM信号, gf2-demo捕获该信号经过处理, 可实现优雅关闭
+$ docker stop gf2-demo
+
+# 重启: 先关闭(SIGTERM信号), 再启动, 可实现优雅关闭
+$ docker restart gf2-demo
+
+# 强制关闭(SIGKILL信号), gf2-demo无法捕获到SIGKILL信号, 直接退出
+$ docker kill gf2-demo
+
+# 强制关闭并删除容器(SIGKILL信号)
+$ docker rm -f gf2-demo
+```
 
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
 

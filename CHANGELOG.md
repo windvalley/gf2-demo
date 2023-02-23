@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.7.3
+
+### Changed
+
+- 优化 systemctl 部署服务方式
+  - 优化服务文件 `manifest/deploy/systemctl/gf2-demo-api*.service`
+  - 优化一键部署脚本 `manifest/deploy/systemctl/deploy.sh`
+  - 增加说明文档 `manifest/deploy/systemctl/README.md`
+- 优化 `supervisor` 部署服务方式
+  - 优化说明文档 `manifest/deploy/supervisor/README.md`
+- 优化 README.md 文档
+  - 增加 `systemctl/supervisor/docker` 如何优雅关闭服务的说明, 不过需要 `GoFrameV2` 框架提供支持通过捕获 `SIGTERM` 信号实现优雅关闭的功能, 目前测试此功能还不可用(仅优雅重启可用).
+
 ## v0.7.2
 
 ### Changed
