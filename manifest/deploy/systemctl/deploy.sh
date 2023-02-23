@@ -11,6 +11,9 @@ env=$1
     exit 1
 }
 
+SED=sed
+[[ $(uname) = "Darwin" ]] && SED=gsed
+
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 project_name="gf2-demo"
@@ -19,14 +22,17 @@ systemd_service="${app_name}.service"
 
 deploy_user="vagrant"
 deploy_server="gf2-demo.sre.im" # 请提前配置发布机到目标服务器之间的ssh key信任
-deploy_dir=/usr/local/$project_name
+deploy_dir=/app/$project_name
 
 [[ "$env" = "test" ]] && {
     systemd_service="${app_name}_test.service"
-    deploy_dir=/usr/local/${project_name}_test
+    deploy_dir=${deploy_dir}_test
 }
 
 cd "$script_dir" || exit 1
+
+directory=$(awk -F= '/WorkingDirectory/{print $2}' $systemd_service)
+$SED -i "s#$directory#$deploy_dir#" $systemd_service
 
 # ******** 部署systemd_service
 
