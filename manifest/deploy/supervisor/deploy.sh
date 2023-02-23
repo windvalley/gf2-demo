@@ -23,7 +23,7 @@ supervisor_service="${app_name}"
 deploy_user="vagrant"
 deploy_server="gf2-demo.sre.im" # 请提前配置发布机到目标服务器之间的ssh key信任
 deploy_dir=/app/$project_name
-supervisorctl="/usr/bin/supervisorctl"
+supervisorctl="supervisorctl"
 
 [[ "$env" = "test" ]] && {
     deploy_dir=${deploy_dir}_test
