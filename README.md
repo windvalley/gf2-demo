@@ -456,6 +456,7 @@ server:
 
   # 针对服务日志的扩展配置
   logger:
+    file: "{Ymd}.log" # 这里只记录server启动过程中gf默认打印的日志, 默认 {Y-m-d}.log; 日志所在路径为server.logPath指定的目录
     ctxKeys: ["user", "mail"] # 自动打印Context的指定变量到日志中. 默认为空
     rotateExpire: "1d"
     rotateBackupExpire: "30d"
@@ -543,8 +544,8 @@ database:
 ```yaml
 # manifest/config/config.yaml
 logger:
-  path: "logs/" # 日志文件目录, 如果为空, 表示不记录到文件
-  file: "{Y-m-d}.log" # 日志文件格式. 默认为"{Y-m-d}.log"
+  path: "logs/" # 日志文件目录, 如果为空, 表示不记录到文件; 建议目录和server.logPath保持一致
+  file: "{Ymd}.log" # 日志文件格式. 默认为 {Y-m-d}.log; 建议和server.logger.file保持一致
   level: "all" # DEBU < INFO < NOTI < WARN < ERRO < CRIT, 也支持ALL, DEV, PROD常见部署模式配置名称. level配置项字符串不区分大小写
   stStatus: 0 # 是否打印错误堆栈(1: enabled - default; 0: disabled). 如果开启, 使用g.Log().Error 将会打印错误堆栈
   ctxKeys: ["user", "mail"] # 自动打印Context的变量到日志中. 默认为空

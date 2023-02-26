@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.7.4
+
+### Changed
+
+- 优化配置文件, 使服务启动过程中产生的日志和开发者打印的日志(`g.Log()`)使用同一个日志文件.
+  问题描述请见: [gogf#2462](https://github.com/gogf/gf/issues/2462)
+
 ## v0.7.3
 
 ### Changed
