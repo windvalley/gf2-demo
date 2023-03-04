@@ -334,14 +334,14 @@ Find more information at: https://github.com/windvalley/gf2-demo
 
   不论是正确还是错误响应, 响应体都统一使用如下格式:
 
-```json
-{
-  "code": "string",
-  "message": "string",
-  "traceid": "string",
-  "data": null
-}
-```
+  ```json
+  {
+    "code": "string",
+    "message": "string",
+    "traceid": "string",
+    "data": null
+  }
+  ```
 
 - 业务码  
   统一使用字符串表示, 如: `"code": "ValidationFailed"`
@@ -384,57 +384,57 @@ var (
 
 - 正确响应
 
-```text
-HTTP/1.1 200 OK
-Content-Type: application/json
-Server: GoFrame HTTP Server
-Trace-Id: 10c9769ce5cf4117c19a595c2d781e94
-Date: Wed, 08 Feb 2023 09:38:41 GMT
-Content-Length: 34
+  ```text
+  HTTP/1.1 200 OK
+  Content-Type: application/json
+  Server: GoFrame HTTP Server
+  Trace-Id: 10c9769ce5cf4117c19a595c2d781e94
+  Date: Wed, 08 Feb 2023 09:38:41 GMT
+  Content-Length: 34
 
-{
-    "code": "OK",
-    "message": "",
-    "traceid": "10c9769ce5cf4117c19a595c2d781e94",
-    "data": null
-}
-```
+  {
+      "code": "OK",
+      "message": "",
+      "traceid": "10c9769ce5cf4117c19a595c2d781e94",
+      "data": null
+  }
+  ```
 
 - 401 错误
 
-```text
-HTTP/1.1 401 Unauthorized
-Content-Type: application/json
-Server: GoFrame HTTP Server
-Trace-Id: a89b7652b1cf41170d6e5233fbb76a21
-Date: Wed, 08 Feb 2023 09:34:56 GMT
-Content-Length: 83
+  ```text
+  HTTP/1.1 401 Unauthorized
+  Content-Type: application/json
+  Server: GoFrame HTTP Server
+  Trace-Id: a89b7652b1cf41170d6e5233fbb76a21
+  Date: Wed, 08 Feb 2023 09:34:56 GMT
+  Content-Length: 83
 
-{
-    "code": "AuthFailed",
-    "message": "authentication failed",
-    "traceid": "a89b7652b1cf41170d6e5233fbb76a21",
-    "data": null
-}
-```
+  {
+      "code": "AuthFailed",
+      "message": "authentication failed",
+      "traceid": "a89b7652b1cf41170d6e5233fbb76a21",
+      "data": null
+  }
+  ```
 
 - 500 错误
 
-```text
-HTTP/1.1 500 Internal Server Error
-Content-Type: application/json
-Server: GoFrame HTTP Server
-Trace-Id: 70cd58a9d8cf4117376a265eb84137e5
-Date: Wed, 08 Feb 2023 09:37:45 GMT
-Content-Length: 73
+  ```text
+  HTTP/1.1 500 Internal Server Error
+  Content-Type: application/json
+  Server: GoFrame HTTP Server
+  Trace-Id: 70cd58a9d8cf4117376a265eb84137e5
+  Date: Wed, 08 Feb 2023 09:37:45 GMT
+  Content-Length: 73
 
-{
-    "code": "InternalError",
-    "message": "an error occurred internally",
-    "traceid": "70cd58a9d8cf4117376a265eb84137e5",
-    "data": null
-}
-```
+  {
+      "code": "InternalError",
+      "message": "an error occurred internally",
+      "traceid": "70cd58a9d8cf4117376a265eb84137e5",
+      "data": null
+  }
+  ```
 
 ### 日志管理 [⌅](#-documentation)
 
@@ -474,34 +474,34 @@ $ curl -X GET 'localhost:9000/v1/demo' \
 
 - 服务访问日志示例
 
-```sh
-# 普通格式
-2023-02-08 16:50:51.992 {10fde08349cd4117115968787a401378} {windvalley, windvalley@sre.im} 401 "GET http localhost:9000 /v1/hello HTTP/1.1" 0.004, ::1, "", "PostmanRuntime/7.28.0"
+  ```sh
+  # 普通格式
+  2023-02-08 16:50:51.992 {10fde08349cd4117115968787a401378} {windvalley, windvalley@sre.im} 401 "GET http localhost:9000 /v1/hello HTTP/1.1" 0.004, ::1, "", "PostmanRuntime/7.28.0"
 
-# json格式
-{"Time":"2023-02-08 16:53:13.118","TraceId":"a8b1bf5f6acd41177931ba72f7411788","CtxStr":"windvalley, windvalley@sre.im","Level":"","Content":"401 \"GET http localhost:9000 /v1/hello HTTP/1.1\" 0.002, ::1, \"\", \"PostmanRuntime/7.28.0\""}
-```
+  # json格式
+  {"Time":"2023-02-08 16:53:13.118","TraceId":"a8b1bf5f6acd41177931ba72f7411788","CtxStr":"windvalley, windvalley@sre.im","Level":"","Content":"401 \"GET http localhost:9000 /v1/hello HTTP/1.1\" 0.002, ::1, \"\", \"PostmanRuntime/7.28.0\""}
+  ```
 
 - 服务错误日志示例
 
-```sh
-# 普通格式
-2023-02-08 16:55:25.984 {2068374f89cd41170d329c50fe5a5fc8} {windvalley, windvalley@sre.im} 401 "GET http localhost:9000 /v1/hello HTTP/1.1" 0.003, ::1, "", "PostmanRuntime/7.28.0", 0, "resource is not authorized", "{Code:NotAuthorized HttpCode:401}"
-Stack:
-1. resource is not authorized: some error
-   1).  gf2-demo/internal/controller.(*cHello).Hello
-        /Users/xg/github/gf2-demo/internal/controller/hello.go:25
-   2).  gf2-demo/internal/logic/middleware.(*sMiddleware).ResponseHandler
-        /Users/xg/github/gf2-demo/internal/logic/middleware/response.go:16
-   3).  gf2-demo/internal/logic/middleware.(*sMiddleware).AccessUser
-        /Users/xg/github/gf2-demo/internal/logic/middleware/accessuser.go:25
-   4).  gf2-demo/internal/logic/middleware.(*sMiddleware).TraceID
-        /Users/xg/github/gf2-demo/internal/logic/middleware/traceid.go:27
-2. some error
+  ```sh
+  # 普通格式
+  2023-02-08 16:55:25.984 {2068374f89cd41170d329c50fe5a5fc8} {windvalley, windvalley@sre.im} 401 "GET http localhost:9000 /v1/hello HTTP/1.1" 0.003, ::1, "", "PostmanRuntime/7.28.0", 0, "resource is not authorized", "{Code:NotAuthorized HttpCode:401}"
+  Stack:
+  1. resource is not authorized: some error
+  1).  gf2-demo/internal/controller.(*cHello).Hello
+          /Users/xg/github/gf2-demo/internal/controller/hello.go:25
+  2).  gf2-demo/internal/logic/middleware.(*sMiddleware).ResponseHandler
+          /Users/xg/github/gf2-demo/internal/logic/middleware/response.go:16
+  3).  gf2-demo/internal/logic/middleware.(*sMiddleware).AccessUser
+          /Users/xg/github/gf2-demo/internal/logic/middleware/accessuser.go:25
+  4).  gf2-demo/internal/logic/middleware.(*sMiddleware).TraceID
+          /Users/xg/github/gf2-demo/internal/logic/middleware/traceid.go:27
+  2. some error
 
-# json格式
-{"Time":"2023-02-08 16:54:28.757","TraceId":"18323afc7bcd411710d9f134cc2ec9d5","CtxStr":"windvalley, windvalley@sre.im","Level":"ERRO","Content":"401 \"GET http localhost:9000 /v1/hello HTTP/1.1\" 0.003, ::1, \"\", \"PostmanRuntime/7.28.0\", 0, \"resource is not authorized\", \"{Code:NotAuthorized HttpCode:401}\"\nStack:\n1. resource is not authorized: some error\n   1).  gf2-demo/internal/controller.(*cHello).Hello\n        /Users/xg/github/gf2-demo/internal/controller/hello.go:25\n   2).  gf2-demo/internal/logic/middleware.(*sMiddleware).ResponseHandler\n        /Users/xg/github/gf2-demo/internal/logic/middleware/response.go:16\n   3).  gf2-demo/internal/logic/middleware.(*sMiddleware).AccessUser\n        /Users/xg/github/gf2-demo/internal/logic/middleware/accessuser.go:25\n   4).  gf2-demo/internal/logic/middleware.(*sMiddleware).TraceID\n        /Users/xg/github/gf2-demo/internal/logic/middleware/traceid.go:27\n2. some error\n"}
-```
+  # json格式
+  {"Time":"2023-02-08 16:54:28.757","TraceId":"18323afc7bcd411710d9f134cc2ec9d5","CtxStr":"windvalley, windvalley@sre.im","Level":"ERRO","Content":"401 \"GET http localhost:9000 /v1/hello HTTP/1.1\" 0.003, ::1, \"\", \"PostmanRuntime/7.28.0\", 0, \"resource is not authorized\", \"{Code:NotAuthorized HttpCode:401}\"\nStack:\n1. resource is not authorized: some error\n   1).  gf2-demo/internal/controller.(*cHello).Hello\n        /Users/xg/github/gf2-demo/internal/controller/hello.go:25\n   2).  gf2-demo/internal/logic/middleware.(*sMiddleware).ResponseHandler\n        /Users/xg/github/gf2-demo/internal/logic/middleware/response.go:16\n   3).  gf2-demo/internal/logic/middleware.(*sMiddleware).AccessUser\n        /Users/xg/github/gf2-demo/internal/logic/middleware/accessuser.go:25\n   4).  gf2-demo/internal/logic/middleware.(*sMiddleware).TraceID\n        /Users/xg/github/gf2-demo/internal/logic/middleware/traceid.go:27\n2. some error\n"}
+  ```
 
 #### SQL 日志
 
@@ -642,8 +642,8 @@ git push --tags
 
 - gf 工具配置(`hack/config.yaml`)
 
-```yaml
-gfcli:
+  ```yaml
+  gfcli:
   # doc: https://goframe.org/pages/viewpage.action?pageId=1115788
   build:
     path: "./bin" # 编译生成的二进制文件的存放目录. 生成的二进制名称默认与程序入口go文件同名
@@ -653,21 +653,21 @@ gfcli:
     extra: ""
     # 编译时的内置变量可以在运行时通过gbuild包获取, 比如: utility/version.go
     varMap:
-      # NOTE:
-      # 1) `version` was generated by `make build`, Do Not Edit
-      # 2) you should manage versions by `git tag vX.X.X`
-      version: v0.3.0
-```
+    # NOTE:
+    # 1) `version` was generated by `make build`, Do Not Edit
+    # 2) you should manage versions by `git tag vX.X.X`
+    version: v0.3.0
+  ```
 
 - 编译
 
-```sh
-# For gf2-demo-api
-make build
+  ```sh
+  # For gf2-demo-api
+  make build
 
-# For gf2-demo-cli
-make build.cli
-```
+  # For gf2-demo-cli
+  make build.cli
+  ```
 
 #### 4. 查看二进制文件版本信息
 
@@ -689,56 +689,56 @@ GF Version:  v2.3.1
 
 - 设计表结构
 
-```sql
--- manifest/sql/gf2_demo.sql
--- Create demo database
-CREATE DATABASE IF NOT EXISTS `gf2_demo`;
+  ```sql
+  -- manifest/sql/gf2_demo.sql
+  -- Create demo database
+  CREATE DATABASE IF NOT EXISTS `gf2_demo`;
 
-USE `gf2_demo`;
+  USE `gf2_demo`;
 
--- Create demo table
-DROP TABLE IF EXISTS `demo`;
-CREATE TABLE `demo`
-(
-    `id`        int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `fielda`  varchar(45) NOT NULL COMMENT 'Field demo',
-    `fieldb`  varchar(45) NOT NULL COMMENT 'Private field demo',
-    `created_at` datetime DEFAULT NULL COMMENT 'Created Time',
-    `updated_at` datetime DEFAULT NULL COMMENT 'Updated Time',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `idx_fielda` (`fielda`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
+  -- Create demo table
+  DROP TABLE IF EXISTS `demo`;
+  CREATE TABLE `demo`
+  (
+      `id`        int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+      `fielda`  varchar(45) NOT NULL COMMENT 'Field demo',
+      `fieldb`  varchar(45) NOT NULL COMMENT 'Private field demo',
+      `created_at` datetime DEFAULT NULL COMMENT 'Created Time',
+      `updated_at` datetime DEFAULT NULL COMMENT 'Updated Time',
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `idx_fielda` (`fielda`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ```
 
 - 创建物理表
 
-```sh
-$ mysql -uroot -p'123456' < manifest/sql/demo.sql
-```
+  ```sh
+  $ mysql -uroot -p'123456' < manifest/sql/demo.sql
+  ```
 
 #### 2. 自动生成数据层相关代码
 
 - gf 工具配置
 
-```yaml
-# hack/config.yaml
-gfcli:
+  ```yaml
+  # hack/config.yaml
+  gfcli:
   gen:
-    # doc: https://goframe.org/pages/viewpage.action?pageId=3673173
-    dao:
+      # doc: https://goframe.org/pages/viewpage.action?pageId=3673173
+      dao:
       - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf2_demo"
-        tables: "" # 指定当前数据库中需要执行代码生成的数据表, 多个以逗号分隔. 如果为空, 表示数据库的所有表都会生成. 默认为空
-        descriptionTag: true # 用于指定是否为数据模型结构体属性增加desription的标签, 内容为对应的数据表字段注释. 默认 false
-        noModelComment: true # 用于指定是否关闭数据模型结构体属性的注释自动生成, 内容为数据表对应字段的注释. 默认 false
-        jsonCase: "snake" # 指定model中生成的数据实体对象中json标签名称规则. 默认 CamelLower
-        clear: true # 自动删除数据库中不存在对应数据表的本地dao/do/entity代码文件, 默认 false. 线上环境应设置为fasle
-```
+          tables: "" # 指定当前数据库中需要执行代码生成的数据表, 多个以逗号分隔. 如果为空, 表示数据库的所有表都会生成. 默认为空
+          descriptionTag: true # 用于指定是否为数据模型结构体属性增加desription的标签, 内容为对应的数据表字段注释. 默认 false
+          noModelComment: true # 用于指定是否关闭数据模型结构体属性的注释自动生成, 内容为数据表对应字段的注释. 默认 false
+          jsonCase: "snake" # 指定model中生成的数据实体对象中json标签名称规则. 默认 CamelLower
+          clear: true # 自动删除数据库中不存在对应数据表的本地dao/do/entity代码文件, 默认 false. 线上环境应设置为fasle
+  ```
 
 - 自动生成 `internal/dao`, `internal/model/do`, `internal/model/entity`
 
-```sh
-$ make dao
-```
+  ```sh
+  $ make dao
+  ```
 
 #### 3. 编写 api 层代码
 
@@ -974,62 +974,62 @@ Content-Length: 88
 
 2. 设置目标服务器(修改 `deploy.sh` 脚本)
 
-```sh
-# 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
-deploy_server="gf2-demo.sre.im"
-# 用于连接目标服务器的用户名
-deploy_user="vagrant"
-# 项目部署目录
-deploy_dir=/app/$project_name
-```
+   ```sh
+   # 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
+   deploy_server="gf2-demo.sre.im"
+   # 用于连接目标服务器的用户名
+   deploy_user="vagrant"
+   # 项目部署目录
+   deploy_dir=/app/$project_name
+   ```
 
 3. 执行部署
 
-```sh
-# 部署测试环境
-$ ./manifest/deploy/systemctl/deploy.sh test
+   ```sh
+   # 部署测试环境
+   $ ./manifest/deploy/systemctl/deploy.sh test
 
-# 部署生产环境
-$ ./manifest/deploy/systemctl/deploy.sh prod
-```
+   # 部署生产环境
+   $ ./manifest/deploy/systemctl/deploy.sh prod
+   ```
 
 4. 验证
 
-首先登录到目标服务器.
+   首先登录到目标服务器.
 
-```sh
-# 默认项目的所有标准输出和标准错误输出都会在此文件中.
-$ tail -f /app/gf2-demo/gf2-demo-api.log
+   ```sh
+   # 默认项目的所有标准输出和标准错误输出都会在此文件中.
+   $ tail -f /app/gf2-demo/gf2-demo-api.log
 
-# 项目常规日志, 包括通过g.Log()打印的日志.
-$ tail -f /app/gf2-demo/logs/2023-02-15.log
+   # 项目常规日志, 包括通过g.Log()打印的日志.
+   $ tail -f /app/gf2-demo/logs/2023-02-15.log
 
-# 项目HTTP服务访问日志
-$ tail -f /app/gf2-demo/logs/access-20230215.log
+   # 项目HTTP服务访问日志
+   $ tail -f /app/gf2-demo/logs/access-20230215.log
 
-# 项目HTTP服务错误日志
-$ tail -f /app/gf2-demo/logs/error-20230215.log
+   # 项目HTTP服务错误日志
+   $ tail -f /app/gf2-demo/logs/error-20230215.log
 
-# sql debug 日志
-$ tail -f /app/gf2-demo/logs/sql-20230215.log
-```
+   # sql debug 日志
+   $ tail -f /app/gf2-demo/logs/sql-20230215.log
+   ```
 
 5. systemctl 常用命令
 
-```sh
-# gf2-demo-api.service 配置有变动的时候, 需要重新加载使生效
-$ sudo systemctl daemon-reload
+   ```sh
+   # gf2-demo-api.service 配置有变动的时候, 需要重新加载使生效
+   $ sudo systemctl daemon-reload
 
-# 启动
-$ sudo systemctl start gf2-demo-api
+   # 启动
+   $ sudo systemctl start gf2-demo-api
 
-# 关闭: 发送 SIGTERM 信号给主(sh)和子进程(gf2-demo-api),
-# gf2-demo-api程序可通过捕捉SIGTERM信号来实现优雅关闭.
-$ sudo systemctl stop gf2-demo-api
+   # 关闭: 发送 SIGTERM 信号给主(sh)和子进程(gf2-demo-api),
+   # gf2-demo-api程序可通过捕捉SIGTERM信号来实现优雅关闭.
+   $ sudo systemctl stop gf2-demo-api
 
-# 重启: 先关闭(SIGTERM), 再启动
-$ sudo systemctl restart gf2-demo-api
-```
+   # 重启: 先关闭(SIGTERM), 再启动
+   $ sudo systemctl restart gf2-demo-api
+   ```
 
 > NOTE:
 >
@@ -1046,131 +1046,131 @@ $ sudo systemctl restart gf2-demo-api
 
 2. 设置目标服务器(修改 `deploy.sh` 脚本)
 
-```sh
-# 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
-deploy_server="gf2-demo.sre.im"
-# 用于连接目标服务器的用户名
-deploy_user="vagrant"
-# 项目部署目录
-deploy_dir=/app/$project_name
-```
+   ```sh
+   # 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
+   deploy_server="gf2-demo.sre.im"
+   # 用于连接目标服务器的用户名
+   deploy_user="vagrant"
+   # 项目部署目录
+   deploy_dir=/app/$project_name
+   ```
 
 3. 在目标服务器上提前安装 supervisor
 
-基于 CentOS7 系统演示.
+   基于 CentOS7 系统演示.
 
-```sh
-yum update -y
-yum install epel-release -y
-yum install supervisor -y
+   ```sh
+   yum update -y
+   yum install epel-release -y
+   yum install supervisor -y
 
-systemctl enable supervisord
-systemctl start supervisord
-systemctl status supervisord
+   systemctl enable supervisord
+   systemctl start supervisord
+   systemctl status supervisord
 
-echo_supervisord_conf > /etc/supervisord.conf
-cat >> /etc/supervisord.conf <<EOF
-[include]
-files = supervisord.d/*.ini
-EOF
+   echo_supervisord_conf > /etc/supervisord.conf
+   cat >> /etc/supervisord.conf <<EOF
+   [include]
+   files = supervisord.d/*.ini
+   EOF
 
-mkdir -p /etc/supervisord.d
-```
+   mkdir -p /etc/supervisord.d
+   ```
 
 4. 执行部署
 
-```sh
-# 部署测试环境
-$ ./manifest/deploy/supervisor/deploy.sh test
+   ```sh
+   # 部署测试环境
+   $ ./manifest/deploy/supervisor/deploy.sh test
 
-# 部署生产环境
-$ ./manifest/deploy/supervisor/deploy.sh prod
-```
+   # 部署生产环境
+   $ ./manifest/deploy/supervisor/deploy.sh prod
+   ```
 
 5. supervisorctl 常用命令
 
-```sh
-# 启动
-$ sudo supervisorctl start gf2-demo-api
+   ```sh
+   # 启动
+   $ sudo supervisorctl start gf2-demo-api
 
-# 关闭(SIGTERM信号), 可捕SIGTERM信号, 实现优雅关闭
-$ sudo supervisorctl stop gf2-demo-api
+   # 关闭(SIGTERM信号), 可捕SIGTERM信号, 实现优雅关闭
+   $ sudo supervisorctl stop gf2-demo-api
 
-# 重启: 先关闭(SIGTERM信号), 再启动.
-# NOTE: /etc/supervisord.*相关配置有变动, 重启具体某服务并不会生效
-$ sudo supervisorctl restart gf2-demo-api
+   # 重启: 先关闭(SIGTERM信号), 再启动.
+   # NOTE: /etc/supervisord.*相关配置有变动, 重启具体某服务并不会生效
+   $ sudo supervisorctl restart gf2-demo-api
 
-# 重启 supervisor 控制的所有服务.
-# NOTE: 当 /etc/supervisord.*相关配置有变动, 必须执行此命令才能加载生效
-$ sudo supervisorctl reload
-```
+   # 重启 supervisor 控制的所有服务.
+   # NOTE: 当 /etc/supervisord.*相关配置有变动, 必须执行此命令才能加载生效
+   $ sudo supervisorctl reload
+   ```
 
 #### Docker
 
 1. Dockerfile
 
-采用两阶段构建, 镜像体积小; 将依赖库下载剥离出来并且前置, 利用缓存特性提高编译速度.
+   采用两阶段构建, 镜像体积小; 将依赖库下载剥离出来并且前置, 利用缓存特性提高编译速度.
 
-```dockerfile
-# syntax=docker/dockerfile:1
+   ```dockerfile
+   # syntax=docker/dockerfile:1
 
-# Step 1: build binary
-FROM golang:1.17 as builder
+   # Step 1: build binary
+   FROM golang:1.17 as builder
 
-ENV GOPROXY https://goproxy.cn,direct
+   ENV GOPROXY https://goproxy.cn,direct
 
-WORKDIR /src
+   WORKDIR /src
 
-# pre-copy/cache go.mod for pre-downloading dependencies and
-# only redownloading them in subsequent builds if they change
-COPY Makefile ./
-RUN make cli
-COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+   # pre-copy/cache go.mod for pre-downloading dependencies and
+   # only redownloading them in subsequent builds if they change
+   COPY Makefile ./
+   RUN make cli
+   COPY go.mod go.sum ./
+   RUN go mod download && go mod verify
 
-COPY . .
-RUN make build OS="linux"
+   COPY . .
+   RUN make build OS="linux"
 
 
-# Step 2: copy binary from step 1
-FROM loads/alpine:3.8
+   # Step 2: copy binary from step 1
+   FROM loads/alpine:3.8
 
-ENV GF_GERROR_BRIEF=true
+   ENV GF_GERROR_BRIEF=true
 
-WORKDIR /app
+   WORKDIR /app
 
-COPY --from=builder /src/bin/linux_amd64/gf2-demo-api .
+   COPY --from=builder /src/bin/linux_amd64/gf2-demo-api .
 
-EXPOSE 9000
+   EXPOSE 9000
 
-ENTRYPOINT [ "./gf2-demo-api" ]
-```
+   ENTRYPOINT [ "./gf2-demo-api" ]
+   ```
 
 2. 制作容器镜像
 
-```sh
-$ cd gf2-demo
+   ```sh
+   $ cd gf2-demo
 
-$ make image
+   $ make image
 
-$ docker image ls
+   $ docker image ls
 
-REPOSITORY          TAG                            IMAGE ID       CREATED          SIZE
-gf2-demo-api        20230221113306.0d26121.dirty   58e6953c2e1b   15 seconds ago   30.1MB
-```
+   REPOSITORY          TAG                            IMAGE ID       CREATED          SIZE
+   gf2-demo-api        20230221113306.0d26121.dirty   58e6953c2e1b   15 seconds ago   30.1MB
+   ```
 
 3. 运行容器
 
-```sh
-# 开发环境
-$ docker run --name gf2-demo -p80:9000 -d gf2-demo-api:20230221113306.0d26121.dirty
+   ```sh
+   # 开发环境
+   $ docker run --name gf2-demo -p80:9000 -d gf2-demo-api:20230221113306.0d26121.dirty
 
-# 测试环境
-$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.test.yaml -d gf2-demo-api:20230221113306.0d26121.dirty
+   # 测试环境
+   $ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.test.yaml -d gf2-demo-api:20230221113306.0d26121.dirty
 
-# 生产环境
-$ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-demo-api:20230221113306.0d26121.dirty
-```
+   # 生产环境
+   $ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-demo-api:20230221113306.0d26121.dirty
+   ```
 
 4. 验证
 
@@ -1179,47 +1179,47 @@ $ docker run --name gf2-demo -p80:9000 -e GF_GCFG_FILE=config.prod.yaml -d gf2-d
 
 - 查看二进制应用版本信息
 
-```sh
-$ docker exec -it gf2-demo ./gf2-demo-api -v
+  ```sh
+  $ docker exec -it gf2-demo ./gf2-demo-api -v
 
-# 输出如下:
-App Version: v0.7.0
-Git Commit:  2023-02-17 19:32:05 95390e39485aa29050c2327c263a732267ec3eb3
-Build Time:  2023-02-20 06:18:57
-Go Version:  go1.17.13
-GF Version:  v2.3.2
-```
+  # 输出如下:
+  App Version: v0.7.0
+  Git Commit:  2023-02-17 19:32:05 95390e39485aa29050c2327c263a732267ec3eb3
+  Build Time:  2023-02-20 06:18:57
+  Go Version:  go1.17.13
+  GF Version:  v2.3.2
+  ```
 
 - 查看不同环境下, 程序使用的配置文件是否正确
 
-```sh
-# 查看容器输出的日志
-$ docker logs gf2-demo
+  ```sh
+  # 查看容器输出的日志
+  $ docker logs gf2-demo
 
-# 如果配置了日志保存到文件, 也可登录到容器内部进行查看.
-$ docker exec -it gf2-demo sh
+  # 如果配置了日志保存到文件, 也可登录到容器内部进行查看.
+  $ docker exec -it gf2-demo sh
 
-# 输出的部分日志截取:
-2023-02-17 18:52:36.568 [DEBU] {7f0f8d5a279744179740f477f49fbd06} /Users/xg/github/gf2-demo/internal/cmd/apiserver/apiserver.go:79: use config file: &{defaultName:config searchPaths:0xc0000bf6e0 jsonMap:0xc000303720 violenceCheck:false}
-```
+  # 输出的部分日志截取:
+  2023-02-17 18:52:36.568 [DEBU] {7f0f8d5a279744179740f477f49fbd06} /Users/xg/github/gf2-demo/internal/cmd/apiserver/apiserver.go:79: use config file: &{defaultName:config searchPaths:0xc0000bf6e0 jsonMap:0xc000303720 violenceCheck:false}
+  ```
 
-上面日志中的 `defaultName` 如果为 `config`, 代表开发环境; 为 `config.test.yaml`, 代表测试环境; 为 `config.prod.yaml`, 代表生产环境.
+  上面日志中的 `defaultName` 如果为 `config`, 代表开发环境; 为 `config.test.yaml`, 代表测试环境; 为 `config.prod.yaml`, 代表生产环境.
 
 5. 如何优雅关闭
 
-```sh
-# 关闭: 会发送SIGTERM信号, gf2-demo捕获该信号经过处理, 可实现优雅关闭
-$ docker stop gf2-demo
+   ```sh
+   # 关闭: 会发送SIGTERM信号, gf2-demo捕获该信号经过处理, 可实现优雅关闭
+   $ docker stop gf2-demo
 
-# 重启: 先关闭(SIGTERM信号), 再启动, 可实现优雅关闭
-$ docker restart gf2-demo
+   # 重启: 先关闭(SIGTERM信号), 再启动, 可实现优雅关闭
+   $ docker restart gf2-demo
 
-# 强制关闭(SIGKILL信号), gf2-demo无法捕获到SIGKILL信号, 直接退出
-$ docker kill gf2-demo
+   # 强制关闭(SIGKILL信号), gf2-demo无法捕获到SIGKILL信号, 直接退出
+   $ docker kill gf2-demo
 
-# 强制关闭并删除容器(SIGKILL信号)
-$ docker rm -f gf2-demo
-```
+   # 强制关闭并删除容器(SIGKILL信号)
+   $ docker rm -f gf2-demo
+   ```
 
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
 
@@ -1304,33 +1304,33 @@ $ make image.push
 
 1. 变更项目目录名称
 
-```sh
-$ mv gf2-demo new-project
-```
+   ```sh
+   $ mv gf2-demo new-project
+   ```
 
 2. 运行变更脚本
 
-```sh
-$ cd new-project
-$ hack/change_project_name.sh new-project
-```
+   ```sh
+   $ cd new-project
+   $ hack/change_project_name.sh new-project
+   ```
 
-> NOTE:
-> 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
+   > NOTE:
+   > 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
 
 3. 验证
 
-```sh
-$ make build
+   ```sh
+   $ make build
 
-输出如下:
+   输出如下:
 
-bin
-├── darwin_amd64
-│   └── new-project-api
-└── linux_amd64
-    └── new-project-api
-```
+   bin
+   ├── darwin_amd64
+   │   └── new-project-api
+   └── linux_amd64
+       └── new-project-api
+   ```
 
 ## 📜 References
 
