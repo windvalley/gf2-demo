@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.7.5
+
+### Changed
+
+- gf 框架版本升级到 `v2.3.3`
+- 美化 README.md 文档格式
+
+### Fixed
+
+- 修复 `hack/change_project_name.sh` 脚本变更项目名称后 `make build` 失败的问题
+
 ## v0.7.4
 
 ### Changed

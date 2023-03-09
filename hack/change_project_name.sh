@@ -37,4 +37,9 @@ find ../ -type f -name "go.mod" -o -name "Makefile" \
 mv ../cmd/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api
 mv ../cmd/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-cli
 
+# shellcheck disable=SC2086
+mv ../cmd/${NEW_PROJECT_NAME}-api/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api.go
+# shellcheck disable=SC2086
+mv ../cmd/${NEW_PROJECT_NAME}-cli/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-cli.go
+
 exit 0
