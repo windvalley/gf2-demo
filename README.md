@@ -166,6 +166,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [Systemctl](#Systemctl)
   - [Supervisor](#Supervisor)
   - [Docker](#Docker)
+  - [优雅关闭测试](#优雅关闭测试)
 - [使用 Makefile 管理项目](#使用-makefile-管理项目-)
 - [变更项目名称](#变更项目名称-)
 
@@ -342,6 +343,12 @@ Find more information at: https://github.com/windvalley/gf2-demo
     "data": null
   }
   ```
+
+  > 💡 **响应 header 中已经有了`Trace-Id`了, 为什么响应 json 中还要加一个`traceid` ?**
+  >
+  > 目的是在遇到错误问题进行排查时, 减少不必要的沟通成本, 毕竟很多用户容易忽略响应 header,
+  > 在响应体中直接体现 `traceid` 更直接. 这样在快速拿到用户反馈的 `traceid` 后,
+  > 我们就可以很快找到对应的日志从而高效解决问题了.
 
 - 业务码  
   统一使用字符串表示, 如: `"code": "ValidationFailed"`
@@ -1024,7 +1031,7 @@ Content-Length: 88
    $ sudo systemctl start gf2-demo-api
 
    # 关闭: 发送 SIGTERM 信号给主(sh)和子进程(gf2-demo-api),
-   # gf2-demo-api程序可通过捕捉SIGTERM信号来实现优雅关闭.
+   # gf2-demo-api程序可通过捕获SIGTERM信号来实现优雅关闭.
    $ sudo systemctl stop gf2-demo-api
 
    # 重启: 先关闭(SIGTERM), 再启动
@@ -1093,7 +1100,7 @@ Content-Length: 88
    # 启动
    $ sudo supervisorctl start gf2-demo-api
 
-   # 关闭(SIGTERM信号), 可捕SIGTERM信号, 实现优雅关闭
+   # 关闭(SIGTERM信号), 可捕获SIGTERM信号, 实现优雅关闭
    $ sudo supervisorctl stop gf2-demo-api
 
    # 重启: 先关闭(SIGTERM信号), 再启动.
@@ -1220,6 +1227,95 @@ Content-Length: 88
    # 强制关闭并删除容器(SIGKILL信号)
    $ docker rm -f gf2-demo
    ```
+
+#### 优雅关闭测试
+
+`GoFrame` 从 `V2.4.0` 版本开始已支持捕获`SIGTERM`信号来实现优雅关闭服务. 以上三种部署方式(`Systemctl`/`Supervisor`/`Docker`)在关闭或重启服务的时候均是发送`SIGTERM`信号给服务进程, 所以都能优雅关闭服务.
+
+开始测试, 准备至少 3 个 terminal 窗口.
+
+1. 模拟接口响应延时 8 秒
+
+   测试接口: `GET localhost:9000/v1/demo/:fielda`
+
+   ```go
+   // internal/controller/demo.go
+
+   func (c *cDemo) Get(ctx context.Context, req *v1.DemoGetReq) (*v1.DemoGetRes, error) {
+   // 加入此行代码, 模拟延迟
+   time.Sleep(8 * time.Second)
+
+   demoInfo, err := service.Demo().Get(ctx, req.Fielda)
+   if err != nil {
+       return nil, err
+   }
+   ```
+
+2. 配置文件中的`server.gracefulShutdownTimeout`调整为 10 秒
+
+   ```yaml
+   server:
+   gracefulShutdownTimeout: 10 # 默认 5秒, 建议根据实际业务情况调整
+   ```
+
+3. 在窗口 1 启动服务
+
+   ```sh
+   $ make run
+   ```
+
+   在输出日志中找到服务 PID 为 80273, 在步骤 5 会用到:
+
+   ```text
+   2023-04-25 11:31:16.716 [INFO] pid[80273]: http server started listening on [:9000]
+   ```
+
+4. 在窗口 2 模拟请求
+
+   ```sh
+   $ curl localhost:9000/v1/demo/windvalley
+   ```
+
+   请求卡住, 在等待响应中.
+
+5. 在窗口 3 模拟优雅关闭服务
+
+   执行完第 4 步后, 立即执行如下命令:
+
+   ```sh
+   $ kill -SYSTERM 80273
+   ```
+
+   窗口 1 输出:
+
+   ```text
+   2023-04-25 11:41:52.004 80273: server gracefully shutting down by signal: terminated
+   ```
+
+   此时, 并没有马上关闭服务, 在等待请求处理完成.
+   几秒钟后, 请求处理完成, 服务关闭, 窗口 1 继续输出:
+
+   ```test
+   2023-04-25 11:41:57.863 [DEBU] {708a5f7a8710591764de0d572ec0fc19} [  1 ms] [default] [gf2_demo] [rows:1  ] SELECT * FROM `demo` WHERE `fielda`='windvalley' LIMIT 1
+   2023-04-25 11:41:57.863 {708a5f7a8710591764de0d572ec0fc19} 200 "GET http localhost:9000 /v1/demo/windvalley HTTP/1.1" 8.005, 127.0.0.1, "", "curl/7.79.1"
+   2023-04-25 11:41:58.275 [INFO] pid[80273]: all servers shutdown
+   ```
+
+   此时窗口 2 输出:
+
+   ```text
+   {"code":"OK","message":"","traceid":"708a5f7a8710591764de0d572ec0fc19","data":{"id":14,"fielda":"windvalley","created_at":"2023-02-14 17:12:59","updated_at":"2023-02-14 17:12:59"}}
+   ```
+
+   请求成功.
+
+> NOTE:
+>
+> 虽然 `GoFrame` 支持优雅重启特性, 但在生产环境下不建议开启:
+>
+> 1. `Systemctl` 或 `Supervisor` 无法很好的接管和控制父子进程. 优雅关闭特性已足够, 可通过部署负载均衡器(LVS 等)来实现不中断服务.
+>
+> 2. 对于`Docker`/`K8S`等容器化场景, 最佳实践要求进程和容器本身同生命周期, 更不能开启优雅重启特性. 容器管理平台本身支持容器的平滑启停, 实现不中断服务.
 
 ### 使用 Makefile 管理项目 [⌅](#-documentation)
 

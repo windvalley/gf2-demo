@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.8.0
+
+### Changed
+
+- gf 框架版本升级到 `v2.4.0`, 已支持优雅关闭特性
+- README.md
+  - 增加优雅关闭特性的相关文档: `项目部署`-`优雅关闭测试`
+  - 增加响应 json 中添加`traceid`字段的用途说明: `错误码管理`-`规范制定`-`统一响应格式`
+
 ## v0.7.5
 
 ### Changed
