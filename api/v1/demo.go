@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"gf2-demo/internal/model"
-
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+
+	"gf2-demo/internal/model"
 )
 
 /*

@@ -9,7 +9,7 @@ const (
 	clientTraceIDHeader = "Trace-Id"
 )
 
-// TraceID use X-Request-Id from client request
+// TraceID use 'Trace-Id' from client request header by default.
 func (s *sMiddleware) TraceID(r *ghttp.Request) {
 	traceID := r.GetHeader(clientTraceIDHeader)
 	if traceID != "" {
