@@ -72,6 +72,19 @@ cli.install:
 		make cli; \
 	fi;
 
+# Check and install golangci-lint tool
+.PHONY: lint.install
+lint.install:
+	@set -e; \
+	golangci-lint --version >/dev/null 2>&1 || \
+		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+##   lint: Run golangci-lint
+.PHONY: lint
+lint: lint.install
+	@echo "******** golangci-lint run ********"
+	@golangci-lint run --timeout=10m
+
 ##   dao: Generate Go files for Dao/Do/Entity
 .PHONY: dao
 dao: cli.install
