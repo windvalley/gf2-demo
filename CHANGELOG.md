@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.9.0
+
+### Added
+
+- 增加 `golangci-lint` 的配置文件 `.golangci.yml`, 保障团队代码风格统一, 提高团队代码质量
+- 增加关于保障代码质量的相关文档
+- `Makefile` 增加 `make lint`, 可进行代码检查(`golangci-lint` 不存在会自动安装)
+
+### Changed
+
+- 根据 `golangci-lint` 的提示, 优化原有代码
+
 ## v0.8.0
 
 ### Changed
