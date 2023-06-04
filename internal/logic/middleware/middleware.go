@@ -7,9 +7,9 @@ type (
 )
 
 func init() {
-	service.RegisterMiddleware(new())
+	service.RegisterMiddleware(New())
 }
 
-func new() *sMiddleware {
+func New() *sMiddleware {
 	return &sMiddleware{}
 }

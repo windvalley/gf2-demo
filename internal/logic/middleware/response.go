@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -19,7 +20,7 @@ type response struct {
 	Data    interface{} `json:"data"`
 }
 
-// ResponseHandler custom response format
+// ResponseHandler custom response format.
 func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 	r.Middleware.Next()
 
@@ -57,6 +58,7 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 		if _, ok = err.(gvalid.Error); ok { // validation error
 			err = gerror.WrapCode(codes.CodeValidationFailed, err)
 			code1 := gerror.Code(err)
+			//nolint: errcheck
 			bizCode, _ = code1.(codes.BizCode)
 		} else {
 			code := gerror.Code(err)
@@ -64,22 +66,25 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 			if !ok {
 				err = gerror.NewCode(codes.CodeInternal) // internal error
 				code1 := gerror.Code(err)
+				//nolint: errcheck
 				bizCode, _ = code1.(codes.BizCode)
 			}
 		}
 
 		msg = err.Error()
 	} else {
-		if r.Response.Status == 404 { // gf internal 404 error
-			bizCode = codes.CodeNotFound.(codes.BizCode)
+		if r.Response.Status == http.StatusNotFound { // gf internal 404 error
+			//nolint: errcheck
+			bizCode, _ = codes.CodeNotFound.(codes.BizCode)
 		} else {
-			bizCode = codes.CodeOK.(codes.BizCode)
+			//nolint: errcheck
+			bizCode, _ = codes.CodeOK.(codes.BizCode)
 		}
 
 		msg = bizCode.Message()
 	}
 
-	r.Response.WriteHeader(bizCode.BizDetail().HttpCode)
+	r.Response.WriteHeader(bizCode.BizDetail().HTTPCode)
 	r.Response.WriteJsonExit(response{
 		Code:    bizCode.BizDetail().Code,
 		Message: msg,

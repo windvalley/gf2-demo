@@ -10,7 +10,7 @@ type BizCode struct {
 
 type BizCodeDetail struct {
 	Code     string
-	HttpCode int
+	HTTPCode int
 }
 
 func (c BizCode) BizDetail() BizCodeDetail {
@@ -29,13 +29,13 @@ func (c BizCode) Detail() interface{} {
 	return c.detail
 }
 
-func New(httpCode int, code string, message string) gcode.Code {
+func New(httpCode int, code, message string) gcode.Code {
 	return BizCode{
 		code:    0,
 		message: message,
 		detail: BizCodeDetail{
 			Code:     code,
-			HttpCode: httpCode,
+			HTTPCode: httpCode,
 		},
 	}
 }

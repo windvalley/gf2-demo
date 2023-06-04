@@ -32,9 +32,9 @@ type DemoListOutput struct {
 	List     []DemoListOutputItem
 }
 
-// DemoListOutputItem NOTE: 此处为了不返回Fieldb字段, 所以重新定义返回结构体, 否则可以直接使用enttity.Demo
+// DemoListOutputItem NOTE: 此处为了不返回Fieldb字段, 所以重新定义返回结构体, 否则可以直接使用enttity.Demo.
 type DemoListOutputItem struct {
-	Id        uint        `json:"id"`
+	ID        uint        `json:"id"`
 	Fielda    string      `json:"fielda"`
 	CreatedAt *gtime.Time `json:"created_at"`
 	UpdatedAt *gtime.Time `json:"updated_at"`

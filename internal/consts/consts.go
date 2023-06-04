@@ -7,3 +7,7 @@ const (
 	AccessUserHeader     = "X-Consumer-Custom-ID"
 	AccessUserMailHeader = "X-Consumer-Username"
 )
+
+const (
+	CliLoggerName = "cli"
+)

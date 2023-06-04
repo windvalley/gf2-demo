@@ -6,13 +6,14 @@ import (
 	"github.com/gogf/gf/v2/os/gbuild"
 )
 
-// PrintVersionInfo for application
+// PrintVersionInfo for application.
 func PrintVersionInfo() {
 	info := gbuild.Info()
 	if info.Git == "" {
 		info.Git = "none"
 	}
 
+	//nolint: forbidigo
 	fmt.Printf(`App Version: %s
 Git Commit:  %s
 Build Time:  %s

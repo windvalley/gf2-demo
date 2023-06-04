@@ -3,13 +3,13 @@ package cli
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
+	"gf2-demo/internal/consts"
 	"gf2-demo/utility"
 )
 
@@ -53,11 +53,12 @@ var (
 			ver := parser.GetOpt("version")
 			if ver != nil {
 				utility.PrintVersionInfo()
-				return
+				return nil
 			}
 
 			config := parser.GetOpt("config").String()
 			if config != "" {
+				//nolint: forcetypeassert
 				g.Cfg().GetAdapter().(*gcfg.AdapterFile).SetFileName(config)
 			}
 
@@ -70,21 +71,19 @@ var (
 			}
 
 			// 显示打印错误的文件行号
-			g.Log("cli").SetFlags(glog.F_TIME_STD | glog.F_FILE_LONG)
+			g.Log(consts.CliLoggerName).SetFlags(glog.F_TIME_STD | glog.F_FILE_LONG)
 
 			// 查看使用的配置文件是哪个
 			configFile := g.Cfg().GetAdapter()
-			g.Log("cli").Debugf(ctx, "use config file: %+v", configFile)
+			g.Log(consts.CliLoggerName).Debugf(ctx, "use config file: %+v", configFile)
 
 			// ****************** 以下部分为业务逻辑
 
-			fmt.Printf("gf2-demo-cli\n")
+			g.Log(consts.CliLoggerName).Info(ctx, "foo")
 
-			g.Log("cli").Info(ctx, "foo")
+			g.Log(consts.CliLoggerName).Error(ctx, errors.New("bar"))
 
-			g.Log("cli").Error(ctx, errors.New("bar"))
-
-			return
+			return nil
 		},
 	}
 )

@@ -1,15 +1,18 @@
 package codes
 
-//  http status, bisiness code, message
+import "net/http"
+
+// http status, bisiness code, message.
 var (
-	CodeOK          = New(200, "OK", "")
+	CodeOK = New(http.StatusOK, "OK", "")
+	//nolint: gomnd
 	CodePartSuccess = New(202, "PartSuccess", "part success")
 
-	CodePermissionDenied = New(401, "AuthFailed", "authentication failed")
-	CodeNotAuthorized    = New(403, "NotAuthorized", "resource is not authorized")
-	CodeNotFound         = New(404, "NotFound", "resource does not exist")
-	CodeValidationFailed = New(400, "ValidationFailed", "validation failed")
-	CodeNotAvailable     = New(400, "NotAvailable", "not available")
+	CodePermissionDenied = New(http.StatusUnauthorized, "AuthFailed", "authentication failed")
+	CodeNotAuthorized    = New(http.StatusForbidden, "NotAuthorized", "resource is not authorized")
+	CodeNotFound         = New(http.StatusNotFound, "NotFound", "resource does not exist")
+	CodeValidationFailed = New(http.StatusBadRequest, "ValidationFailed", "validation failed")
+	CodeNotAvailable     = New(http.StatusBadRequest, "NotAvailable", "not available")
 
-	CodeInternal = New(500, "InternalError", "an error occurred internally")
+	CodeInternal = New(http.StatusInternalServerError, "InternalError", "an error occurred internally")
 )

@@ -56,11 +56,12 @@ var (
 			ver := parser.GetOpt("version")
 			if ver != nil {
 				utility.PrintVersionInfo()
-				return
+				return nil
 			}
 
 			config := parser.GetOpt("config").String()
 			if config != "" {
+				//nolint: forcetypeassert
 				g.Cfg().GetAdapter().(*gcfg.AdapterFile).SetFileName(config)
 			}
 
