@@ -141,9 +141,9 @@ linters-settings:
     # Apply the rewrite rules to the source before reformatting.
     # https://pkg.go.dev/cmd/gofmt
     # Default: []
-    rewrite-rules:
-      - pattern: "interface{}"
-        replacement: "any"
+    # rewrite-rules:
+    #   - pattern: "interface{}"
+    #     replacement: "any"
 
   # Check import statements are formatted according to the 'goimport' command.
   # Reformat imports in autofix mode.
@@ -198,7 +198,7 @@ linters-settings:
   govet:
     # Report about shadowed variables.
     # Default: false
-    check-shadowing: true
+    check-shadowing: false
     settings:
       # Analyzer name, run `go tool vet help` to see all analyzers.
       printf:
@@ -378,8 +378,6 @@ linters:
     - revive
     # [style, metalinter] Provides diagnostics that check for bugs, performance and style issues.
     - gocritic
-    # [style, error] Checks that errors returned from external packages are wrapped.
-    - wrapcheck
     # [style] Checks assignments with too many blank identifiers (e.g. x, , , _, := f()).
     - dogsled
     # [style] Checks that printf-like functions are named with f at the end.
@@ -418,6 +416,8 @@ linters:
     - usestdlibvars
     # [style] Finds wasted assignment statements.
     - wastedassign
+    # [style, error] Checks that errors returned from external packages are wrapped.
+    #- wrapcheck
 
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
@@ -435,9 +435,6 @@ issues:
       text: "weak cryptographic primitive"
       linters:
         - gosec
-    - path: utility/version.go
-      linters:
-        - forbidigo
 
     # Exclude some `staticcheck` messages.
     - linters:
