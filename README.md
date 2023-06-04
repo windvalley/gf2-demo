@@ -16,6 +16,7 @@
 - 完整的增删改查接口示例和完善的开发流程文档, 帮助开发者快速上手
 - 项目部署遵循不可变基础设施原则, 不论是传统单体部署还是容器云部署方式
 - 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
+- 增加 `golangci-lint` 配置文件 `.golangci.yml`, 统一团队代码风格, 保障团队代码质量
 - 适合个人开发者高质量完成项目, 也适合团队统一后端技术框架, 规范高效管理
 
 ## 🚀 Quick Start
@@ -162,6 +163,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [6. 编写 controller 层代码](#6-编写-controller-层代码)
   - [7. 路由注册](#7-路由注册)
   - [8. 接口访问测试](#8-接口访问测试)
+- [代码质量](#代码质量-)
 - [项目部署](#项目部署-)
   - [Systemctl](#Systemctl)
   - [Supervisor](#Supervisor)
@@ -969,6 +971,53 @@ Content-Length: 88
 {"code":"OK","message":"","traceid":"0862d01e5aa64317c7fae45b326dabd1","data":{"id":17}}
 ```
 
+### 代码质量 [⌅](#-documentation)
+
+统一团队代码风格, 保障团队代码质量.
+
+> Github: https://github.com/golangci/golangci-lint <br>
+> Documentation: https://golangci-lint.run
+
+#### 安装 golangci-lint
+
+```sh
+# 进行代码检查, 如果 golangci-lint 没有安装会自动进行安装
+$ make lint
+```
+
+或
+
+```sh
+$ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+```
+
+#### 使用方法
+
+1. 命令行执行
+
+   ```sh
+   # 在仓库根路径执行, 检测仓库内所有Go代码
+   $ golangci-lint run
+   # 或
+   $ make lint
+
+   # 查看所有linters的功能介绍
+   $ golangci-lint help linters
+
+   # 查看 .golangci.yml 已启用的 linters
+   $ golangci-lint linters
+
+   # 只使用某一个linter来检查代码
+   $ golangci-lint run --no-config --disable-all -E errcheck
+   ```
+
+2. 集成到编辑器或 IDE
+
+请参考官方文档: `https://golangci-lint.run/usage/integrations/`
+
+强烈建议使用此种方式, 可实时提示代码存在的问题, 而不是等到编译的时候才知道哪里出错了,
+不但提高代码质量, 还能提高编码效率.
+
 ### 项目部署 [⌅](#-documentation)
 
 #### Systemctl
@@ -1329,6 +1378,7 @@ Usage:
 Targets:
 
     cli          Install/Update to the latest Gf Cli tool
+    lint         Run golangci-lint
     dao          Generate Go files for Dao/Do/Entity
     service      Generate Go files for Service
     run          Run gf2-demo-api for development environment
@@ -1359,6 +1409,9 @@ Options:
 ```sh
 # 安装最新版gf
 $ make cli
+
+# 运行 golangci-lint 检查代码
+$ make lint
 
 # 物理表有增加或表结构有更新时, 自动生成或更新数据层相关代码
 $ make dao
