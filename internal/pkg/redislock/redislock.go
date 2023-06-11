@@ -14,22 +14,22 @@ import (
 
 // Lock 分布式锁.
 type Lock struct {
-	client                 *gredis.Redis
-	logger                 *glog.Logger
-	key                    string
-	value                  string
-	expireSeconds          int64
-	renewalIntervalSeconds int64
-	timeoutSeconds         int64
-	stopRenewalCh          chan struct{}
+	client          *gredis.Redis
+	logger          *glog.Logger
+	key             string
+	value           string
+	expiration      time.Duration
+	renewalInterval time.Duration
+	taskTimeout     time.Duration
+	stopRenewalCh   chan struct{}
 }
 
 // Options 可选配置项.
 type Options struct {
-	LoggerName     string
-	ExpireSeconds  int64
-	RenewalSeconds int64
-	TimeoutSeconds int64
+	LoggerName      string
+	Expiration      time.Duration
+	RenewalInterval time.Duration
+	TaskTimeout     time.Duration
 }
 
 // Option 配置项.
@@ -38,10 +38,10 @@ type Option func(*Options)
 // New 创建一个新的分布式锁.
 func New(lockKey string, opts ...Option) *Lock {
 	options := Options{
-		LoggerName:     "",
-		ExpireSeconds:  60,
-		RenewalSeconds: 20,
-		TimeoutSeconds: 0,
+		LoggerName:      "",
+		Expiration:      60 * time.Second,
+		RenewalInterval: 20 * time.Second,
+		TaskTimeout:     0,
 	}
 
 	for _, opt := range opts {
@@ -49,14 +49,14 @@ func New(lockKey string, opts ...Option) *Lock {
 	}
 
 	return &Lock{
-		client:                 g.Redis(),
-		key:                    lockKey,
-		value:                  uuid.NewV4().String(),
-		expireSeconds:          options.ExpireSeconds,
-		renewalIntervalSeconds: options.RenewalSeconds,
-		timeoutSeconds:         options.TimeoutSeconds,
-		stopRenewalCh:          make(chan struct{}),
-		logger:                 g.Log(options.LoggerName),
+		client:          g.Redis(),
+		key:             lockKey,
+		value:           uuid.NewV4().String(),
+		expiration:      options.Expiration,
+		renewalInterval: options.RenewalInterval,
+		taskTimeout:     options.TaskTimeout,
+		stopRenewalCh:   make(chan struct{}),
+		logger:          g.Log(options.LoggerName),
 	}
 }
 
@@ -71,7 +71,7 @@ func (l *Lock) Acquire(ctx context.Context) bool {
 		return false
 	}
 
-	if _, err := l.client.Expire(ctx, l.key, l.expireSeconds); err != nil {
+	if _, err := l.client.Expire(ctx, l.key, int64(l.expiration.Seconds())); err != nil {
 		l.logger.Warningf(ctx, "set lock expiration failed, key: %s, value: %s, error: %v", l.key, l.value, err)
 	}
 
@@ -123,13 +123,13 @@ func (l *Lock) ForceRelease(ctx context.Context) bool {
 
 // 续约锁.
 func (l *Lock) startRenewal(ctx context.Context) {
-	ticker := time.NewTicker(time.Duration(l.renewalIntervalSeconds) * time.Second)
+	ticker := time.NewTicker(l.renewalInterval)
 	defer ticker.Stop()
 
 	timeoutCh := make(chan struct{})
-	if l.timeoutSeconds > 0 {
+	if l.taskTimeout > 0 {
 		go func() {
-			time.Sleep(time.Duration(l.timeoutSeconds) * time.Second)
+			time.Sleep(l.taskTimeout)
 			close(timeoutCh)
 		}()
 	}
@@ -138,7 +138,7 @@ func (l *Lock) startRenewal(ctx context.Context) {
 		select {
 		// 续约，重置锁的过期时间
 		case <-ticker.C:
-			if _, err := l.client.Expire(ctx, l.key, l.expireSeconds); err != nil {
+			if _, err := l.client.Expire(ctx, l.key, int64(l.expiration.Seconds())); err != nil {
 				l.logger.Warningf(ctx, "renew lock expiration failed, key: %s, value: %s, error: %v", l.key, l.value, err)
 			}
 		// 续约被停止，结束 goroutine
@@ -161,24 +161,24 @@ func WithLoggerName(loggerName string) Option {
 
 // WithExpireSeconds 设置锁的过期时间. 为分布式锁设置过期时间的意义在于防止程序崩溃或其他原因导致锁始终存在(死锁).
 // 默认60秒.
-func WithExpireSeconds(expireSeconds int64) Option {
+func WithExpireSeconds(expiration time.Duration) Option {
 	return func(o *Options) {
-		o.ExpireSeconds = expireSeconds
+		o.Expiration = expiration
 	}
 }
 
 // WithRenewalSeconds 设置间隔多少秒对锁进行续约.
 // 默认20秒.
-func WithRenewalSeconds(renewalSeconds int64) Option {
+func WithRenewalSeconds(renewalInterval time.Duration) Option {
 	return func(o *Options) {
-		o.RenewalSeconds = renewalSeconds
+		o.RenewalInterval = renewalInterval
 	}
 }
 
 // WithTimeoutSeconds 为续约goroutine设置超时时间, 一般是实际任务执行的超时时间.
 // 默认不超时.
-func WithTimeoutSeconds(timeoutSeconds int64) Option {
+func WithTimeoutSeconds(taskTimeout time.Duration) Option {
 	return func(o *Options) {
-		o.TimeoutSeconds = timeoutSeconds
+		o.TaskTimeout = taskTimeout
 	}
 }
