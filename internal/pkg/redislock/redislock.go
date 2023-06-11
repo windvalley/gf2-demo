@@ -26,6 +26,7 @@ type Lock struct {
 
 // Options 可选配置项.
 type Options struct {
+	Group           string
 	LoggerName      string
 	Expiration      time.Duration
 	RenewalInterval time.Duration
@@ -38,6 +39,7 @@ type Option func(*Options)
 // New 创建一个新的分布式锁.
 func New(lockKey string, opts ...Option) *Lock {
 	options := Options{
+		Group:           "default",
 		LoggerName:      "",
 		Expiration:      60 * time.Second,
 		RenewalInterval: 20 * time.Second,
@@ -49,7 +51,7 @@ func New(lockKey string, opts ...Option) *Lock {
 	}
 
 	return &Lock{
-		client:          g.Redis(),
+		client:          g.Redis(options.Group),
 		key:             lockKey,
 		value:           uuid.NewV4().String(),
 		expiration:      options.Expiration,
@@ -148,6 +150,13 @@ func (l *Lock) startRenewal(ctx context.Context) {
 		case <-timeoutCh:
 			return
 		}
+	}
+}
+
+// WithRedisGroup 设置使用配置的哪组redis服务器(或集群).
+func WithRedisGroup(group string) Option {
+	return func(o *Options) {
+		o.Group = group
 	}
 }
 
