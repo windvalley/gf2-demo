@@ -95,8 +95,15 @@ database:
 
 # doc: https://goframe.org/pages/viewpage.action?pageId=1114217
 redis:
+  # 默认分组, 调用方式: g.Redis()
   default:
     address: 127.0.0.1:6379
-    db: 2
+    db: 0
+    pass:
+    idleTimeout: 600
+  # 延迟队列分组, 调用方式: g.Redis("delayqueue")
+  delayqueue:
+    address: 127.0.0.1:6379
+    db: 1
     pass:
     idleTimeout: 600

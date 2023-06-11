@@ -5,6 +5,7 @@ import (
 	"time"
 
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
+	"github.com/gogf/gf/v2/database/gredis"
 	"github.com/gogf/gf/v2/os/gctx"
 	uuid "github.com/satori/go.uuid"
 )
@@ -18,10 +19,24 @@ type message struct {
 func TestDelayQueue(t *testing.T) {
 	ctx := gctx.New()
 
+	// *** 此处配置仅测试使用, 正式使用请在manifest/config/config.yml中配置
+	redisConfig := gredis.Config{
+		Address: "127.0.0.1:6379",
+		Db:      1,
+		Pass:    "",
+	}
+	redisGroup := "delayqueue" // 默认: default
+	gredis.SetConfig(&redisConfig, redisGroup)
+	// ****************************************
+
 	// 创建一个延迟队列dq, 使消息延迟3秒后才能被消费
 	topic := "dq"
 	delay := 3 * time.Second
-	dq := NewDelayQueue(topic, delay)
+
+	// 如果是默认的default分组, 可忽略此选项.
+	groupOption := WithRedisGroup(redisGroup)
+
+	dq := NewDelayQueue(topic, delay, groupOption)
 
 	msg1 := message{
 		ID:   uuid.NewV4().String(),

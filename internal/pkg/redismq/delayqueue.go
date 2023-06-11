@@ -20,10 +20,26 @@ type DelayQueue struct {
 	delay  time.Duration
 }
 
+// Options 可选配置项.
+type Options struct {
+	Group string
+}
+
+// Option 配置项.
+type Option func(*Options)
+
 // NewDelayQueue 新建延迟队列实例.
-func NewDelayQueue(topic string, delay time.Duration) *DelayQueue {
+func NewDelayQueue(topic string, delay time.Duration, opts ...Option) *DelayQueue {
+	options := Options{
+		Group: "default",
+	}
+
+	for _, opt := range opts {
+		opt(&options)
+	}
+
 	return &DelayQueue{
-		client: g.Redis(),
+		client: g.Redis(options.Group),
 		topic:  topic,
 		delay:  delay,
 	}
@@ -71,4 +87,11 @@ func (d *DelayQueue) Remove(ctx context.Context, timestamp int64) (int64, error)
 	n, err := d.client.ZRemRangeByScore(ctx, d.topic, min, max)
 
 	return n, err
+}
+
+// WithRedisGroup 设置使用配置的哪组redis服务器(或集群).
+func WithRedisGroup(group string) Option {
+	return func(o *Options) {
+		o.Group = group
+	}
 }
