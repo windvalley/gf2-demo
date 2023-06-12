@@ -70,12 +70,21 @@ func (d *DelayQueue) Produce(ctx context.Context, messages []interface{}) error 
 
 // Consume 获取score小于给定时间戳(一般为消费的当前时间戳)的所有消息.
 func (d *DelayQueue) Consume(ctx context.Context, timestamp int64) (gvar.Vars, error) {
-	results, err := d.client.ZRange(ctx, d.topic, -1, timestamp, gredis.ZRangeOption{
+	results, err := d.client.ZRange(ctx, d.topic, 0, timestamp, gredis.ZRangeOption{
 		ByScore:    true,
 		WithScores: false,
 	})
+	if err == nil {
+		return results, nil
+	}
 
-	return results, err
+	// 一些redis版本不支持如上命令方式，通过ZRANGEBYSCORE兼容.
+	result, err := d.client.Do(ctx, "ZRANGEBYSCORE", d.topic, 0, timestamp)
+	if err != nil {
+		return nil, err
+	}
+
+	return result.Vars(), nil
 }
 
 // Remove 删除score小于给定时间戳(一般为传给Consume方法的时间戳)的所有消息.
@@ -85,6 +94,13 @@ func (d *DelayQueue) Remove(ctx context.Context, timestamp int64) (int64, error)
 
 	// n 为成功删除的消息数量
 	n, err := d.client.ZRemRangeByScore(ctx, d.topic, min, max)
+
+	return n, err
+}
+
+// Remove 删除指定消息.
+func (d *DelayQueue) RemoveByMsg(ctx context.Context, message interface{}) (int64, error) {
+	n, err := d.client.ZRem(ctx, d.topic, message)
 
 	return n, err
 }
