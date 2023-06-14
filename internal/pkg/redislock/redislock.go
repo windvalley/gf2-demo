@@ -38,16 +38,22 @@ type Option func(*Options)
 
 // New 创建一个新的分布式锁.
 func New(lockKey string, opts ...Option) *Lock {
+	defaultRenewalInterval := 10 * time.Second
+
 	options := Options{
-		Group:           "default",
+		Group:           "",
 		LoggerName:      "",
-		Expiration:      60 * time.Second,
-		RenewalInterval: 20 * time.Second,
+		Expiration:      20 * time.Second,
+		RenewalInterval: defaultRenewalInterval,
 		TaskTimeout:     0,
 	}
 
 	for _, opt := range opts {
 		opt(&options)
+	}
+
+	if options.RenewalInterval > options.Expiration {
+		options.RenewalInterval = options.Expiration / 2
 	}
 
 	return &Lock{
@@ -64,17 +70,16 @@ func New(lockKey string, opts ...Option) *Lock {
 
 // Acquire 获取锁.
 func (l *Lock) Acquire(ctx context.Context) bool {
-	ok, err := l.client.SetNX(ctx, l.key, l.value)
+	res, err := l.client.Do(ctx, "set", l.key, l.value, "ex",
+		formatSec(ctx, l.logger, l.expiration), "nx")
 	if err != nil {
 		l.logger.Errorf(ctx, "acquire lock failed, key: %s, value: %s, error: %v", l.key, l.value, err)
 		return false
 	}
+
+	ok := res.Bool()
 	if !ok {
 		return false
-	}
-
-	if _, err := l.client.Expire(ctx, l.key, int64(l.expiration.Seconds())); err != nil {
-		l.logger.Warningf(ctx, "set lock expiration failed, key: %s, value: %s, error: %v", l.key, l.value, err)
 	}
 
 	// 成功获取到锁，启动续约 goroutine
@@ -168,26 +173,38 @@ func WithLoggerName(loggerName string) Option {
 	}
 }
 
-// WithExpireSeconds 设置锁的过期时间. 为分布式锁设置过期时间的意义在于防止程序崩溃或其他原因导致锁始终存在(死锁).
+// WithExpiration 设置锁的过期时间. 为分布式锁设置过期时间的意义在于防止程序崩溃或其他原因导致锁始终存在(死锁).
 // 默认60秒.
-func WithExpireSeconds(expiration time.Duration) Option {
+func WithExpiration(expiration time.Duration) Option {
 	return func(o *Options) {
 		o.Expiration = expiration
 	}
 }
 
-// WithRenewalSeconds 设置间隔多少秒对锁进行续约.
+// WithRenewalInterval 设置间隔多少秒对锁进行续约.
 // 默认20秒.
-func WithRenewalSeconds(renewalInterval time.Duration) Option {
+func WithRenewalInterval(renewalInterval time.Duration) Option {
 	return func(o *Options) {
 		o.RenewalInterval = renewalInterval
 	}
 }
 
-// WithTimeoutSeconds 为续约goroutine设置超时时间, 一般是实际任务执行的超时时间.
+// WithTimeout 为续约goroutine设置超时时间, 一般是实际任务执行的超时时间.
 // 默认不超时.
-func WithTimeoutSeconds(taskTimeout time.Duration) Option {
+func WithTimeout(taskTimeout time.Duration) Option {
 	return func(o *Options) {
 		o.TaskTimeout = taskTimeout
 	}
+}
+
+func formatSec(ctx context.Context, logger *glog.Logger, dur time.Duration) int64 {
+	if dur > 0 && dur < time.Second {
+		logger.Warningf(
+			ctx,
+			"specified duration is %s, but minimal supported value is %s - truncating to 1s",
+			dur, time.Second,
+		)
+		return 1
+	}
+	return int64(dur / time.Second)
 }
