@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.10.0
+
+### Added
+
+封装 redis 常用工具库(位于 `internal/pkg/`), 加速开发效率:
+
+- `redismq`
+  常规消息队列, 应用场景: 异步任务处理、解耦系统组件、削峰填谷、日志收集和事件驱动等
+- `redisdelaymq`
+  延时消息队列, 应用场景: 定时任务调度、延迟通知和订单超时处理等
+- `redispubsub`
+  发布订阅, 应用场景: 消息广播、实时通知、日志订阅和事件驱动等
+- `redislock`
+  分布式锁, 应用场景: 并发控制、排他资源访问、分布式任务调度和避免重复操作等
+
 ## v0.9.0
 
 ### Added
