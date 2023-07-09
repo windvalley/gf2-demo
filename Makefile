@@ -15,6 +15,9 @@ CLI_PATH = cmd/gf2-demo-cli/${CLI_NAME}.go
 
 VERSION = $(shell git describe --tags --always --match='v*')
 
+# Be same as gf version in go.mod.
+GF_VERSION = v2.4.2
+
 SED = sed
 ifeq ($(shell uname), Darwin)
 	SED = gsed
@@ -57,7 +60,7 @@ endif
 .PHONY: cli
 cli:
 	@set -e; \
-	wget -O gf https://github.com/gogf/gf/releases/latest/download/gf_$(shell go env GOOS)_$(shell go env GOARCH) && \
+	wget -O gf https://github.com/gogf/gf/releases/download/${GF_VERSION}/gf_$(shell go env GOOS)_$(shell go env GOARCH) && \
 	chmod +x gf && \
 	./gf install -y && \
 	rm ./gf
@@ -66,10 +69,16 @@ cli:
 # Check and install CLI tool
 .PHONY: cli.install
 cli.install:
+	@echo "******** install gf cli ********"
 	@set -e; \
-	gf -v > /dev/null 2>&1 || if [[ "$?" -ne "0" ]]; then \
+	if ! gf -v >/dev/null 2>&1; then \
   		echo "GoFame CLI is not installed, start proceeding auto installation..."; \
 		make cli; \
+	elif [[ $$(gf -v|awk -F: '/GF Version:/{print $$2}' | awk '{gsub(/^[[:space:]]+|[[:space:]]+$$/, "")}1') != ${GF_VERSION} ]];then \
+  		echo "GoFame CLI version is not equal to ${GF_VERSION}, start proceeding auto installation..."; \
+		make cli; \
+	else \
+		echo "GoFame CLI is already installed and version is right: $(GF_VERSION)"; \
 	fi;
 
 # Check and install golangci-lint tool
@@ -89,7 +98,7 @@ lint: lint.install
 .PHONY: dao
 dao: cli.install
 	@echo "******** gf gen dao ********"
-	@GF_GCFG_FILE=config.yaml gf gen dao
+	@gf gen dao
 
 ##   service: Generate Go files for Service
 .PHONY: service

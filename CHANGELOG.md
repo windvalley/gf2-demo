@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.11.0
+
+### Added
+
+- 新增 redis 常用工具库: `internal/pkg/rediscache`)
+- 新增 kafka 客户端以及使用示例(`internal/pkg/kafka` )
+
+### Fixed
+
+- `Makefile`
+  - 优化`make cli.install`, 解决因官方 gf cli 升级可能导致的本项目编译报错问题: [#2](https://github.com/windvalley/gf2-demo/issues/2), [#3](https://github.com/windvalley/gf2-demo/issues/3)
+
 ## v0.10.0
 
 ### Added
