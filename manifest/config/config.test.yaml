@@ -100,10 +100,21 @@ redis:
     address: 127.0.0.1:6379
     db: 0
     pass:
-    idleTimeout: 600
+    # 连接最长存活时间, 默认值: 30s, 建议设置的长一些.
+    # 建立连接后, 可用此连接进行多次reids请求,
+    # 从建立连接开始计算, 只要超过这个时间就会自动断开连接,
+    # 就算此时有redis请求也会先关闭当前连接, 然后重新建一个新的连接,
+    # 除非请求是一个阻塞式请求, 比如: BLPop等, 此时连接将始终保持,
+    # 直到从队列读取到数据才会断开连接.
+    maxConnLifetime: 30m
+    # 连接最大空闲时间, 默认值: 10s, 建议设置的长一些.
+    # 只要连接空闲(没有新请求)超过idleTimeout后, 就会断开连接.
+    # 此值应该小于maxConnLifetime, 才有实际意义.
+    idleTimeout: 10m
   # 延迟队列分组, 调用方式: g.Redis("delayqueue")
   delayqueue:
     address: 127.0.0.1:6379
     db: 1
     pass:
-    idleTimeout: 600
+    maxConnLifetime: 30m
+    idleTimeout: 10m
