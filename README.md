@@ -14,6 +14,7 @@
 - 中间件统一拦截响应, 规范响应格式, 规范业务错误码
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
 - 完整的增删改查接口示例和完善的开发流程文档, 帮助开发者快速上手
+- 封装 `Redis` 常用工具库: `rediscache`, `redislock`, `redismq`, `redisdelaymq`, `redispubsub`, 帮助提升开发效率
 - 项目部署遵循不可变基础设施原则, 不论是传统单体部署还是容器云部署方式
 - 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
 - 增加 `golangci-lint` 配置文件 `.golangci.yml`, 统一团队代码风格, 保障团队代码质量
@@ -138,11 +139,11 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [业务错误码](#业务错误码)
   - [响应示例](#响应示例)
 - [日志管理](#日志管理-)
-  - [HTTP 服务日志](#HTTP-服务日志)
-    - [1. HTTP 服务日志配置](#1-HTTP-服务日志配置)
+  - [HTTP 服务日志](#http-服务日志)
+    - [1. HTTP 服务日志配置](#1-http-服务日志配置)
     - [2. 生成的日志示例](#2-生成的日志示例)
-  - [SQL 日志](#SQL-日志)
-    - [1. SQL 日志配置](#1-SQL-日志配置)
+  - [SQL 日志](#sql-日志)
+    - [1. SQL 日志配置](#1-sql-日志配置)
     - [2. 生成的日志示例](#2-生成的日志示例)
   - [开发者打印的通用日志](#开发者打印的通用日志)
     - [1. 通用日志配置](#1-通用日志配置)
@@ -152,8 +153,11 @@ Find more information at: https://github.com/windvalley/gf2-demo
 - [版本管理](#版本管理-)
   - [1. 写版本变更文档](#1-写版本变更文档)
   - [2. 给项目仓库打 tag](#2-给项目仓库打-tag)
-  - [3. 使用 Makefile 编译](#3-使用-Makefile-编译)
+  - [3. 使用 Makefile 编译](#3-使用-makefile-编译)
   - [4. 查看二进制文件版本信息](#4-查看二进制文件版本信息)
+- [Redis](#redis-)
+  - [Redis 配置](#redis-配置)
+  - [Redis 工具库](#redis-工具库)
 - [开发流程](#开发流程-)
   - [1. 设计表结构, 创建物理表](#1-设计表结构-创建物理表)
   - [2. 自动生成数据层相关代码](#2-自动生成数据层相关代码)
@@ -165,9 +169,9 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [8. 接口访问测试](#8-接口访问测试)
 - [代码质量](#代码质量-)
 - [项目部署](#项目部署-)
-  - [Systemctl](#Systemctl)
-  - [Supervisor](#Supervisor)
-  - [Docker](#Docker)
+  - [Systemctl](#systemctl)
+  - [Supervisor](#supervisor)
+  - [Docker](#docker)
   - [优雅关闭测试](#优雅关闭测试)
 - [使用 Makefile 管理项目](#使用-makefile-管理项目-)
 - [变更项目名称](#变更项目名称-)
@@ -691,6 +695,52 @@ Build Time:  2023-02-08 15:31:20
 Go Version:  go1.17.6
 GF Version:  v2.3.1
 ```
+
+### Redis [⌅](#-documentation)
+
+#### Redis 配置
+
+```yaml
+# manifest/config/config.yaml
+
+# doc: https://goframe.org/pages/viewpage.action?pageId=1114217
+redis:
+  # 默认分组, 调用方式: g.Redis()
+  default:
+    address: 127.0.0.1:6379
+    # 数据库索引, 0-15
+    db: 0
+    # 访问授权密码
+    pass:
+    # 连接最长存活时间, 默认值: 30s, 建议设置的长一些.
+    # 建立连接后, 可用此连接进行多次reids请求,
+    # 从建立连接开始计算, 只要超过这个时间就会自动断开连接,
+    # 就算此时有redis请求也会先关闭当前连接, 然后重新建一个新的连接,
+    # 除非请求是一个阻塞式请求, 比如: BLPop等, 此时连接将始终保持,
+    # 直到从队列读取到数据才会断开连接.
+    maxConnLifetime: 30m
+    # 连接最大空闲时间, 默认值: 10s;
+    # 只要连接空闲(没有新请求)超过idleTimeout后, 就会断开连接.
+    # 此值应该小于maxConnLifetime, 才有实际意义.
+    idleTimeout: 10m
+  # 延迟队列分组, 调用方式: g.Redis("delayqueue")
+  delayqueue:
+    address: 127.0.0.1:6379
+    db: 1
+    pass:
+    maxConnLifetime: 30m
+    idleTimeout: 10m
+```
+
+#### Redis 工具库
+
+- Redis 缓存: `internal/pkg/rediscache`
+- Redis 分布式锁: `internal/pkg/redislock`
+- Redis 消息队列: `internal/pkg/redismq`
+- Redis 延迟队列: `internal/pkg/redisdelaymq`
+- Redis 发布订阅: `internal/pkg/redispubsub`
+
+使用方法可参考代码或每个包下面的 test 文件.
 
 ### 开发流程 [⌅](#-documentation)
 
