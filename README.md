@@ -184,8 +184,11 @@ Find more information at: https://github.com/windvalley/gf2-demo
 ├── Makefile  # 用于项目管理
 ├── README.md  # 项目文档
 ├── api  # 对外接口定义: 对外提供服务的输入/输出数据结构定义, 路由path定义, 数据校验等
-│   └── v1
-│       └── demo.go
+│   ├── api.go  # 接口模块通用结构
+│   └── demo  # demo模块
+│       ├── demo.go  # demo模块的api interface, 由make ctrl自动生成
+│       └── v1  # 版本控制
+│           └── demo.go  # 开发者按照规范编写的接口文件, make ctrl会通过本文件自动生成controller代码
 ├── bin  # make build 和 make build.cli 生成的二进制可执行文件所在目录
 │   ├── darwin_amd64
 │   │   ├── gf2-demo-api
@@ -213,7 +216,14 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   ├── consts  # 项目所有通用常量定义
 │   │   └── consts.go
 │   ├── controller  # 对外接口实现: 接收/解析用户输入参数的入口/接口层
-│   │   └── demo.go
+│   │   └── demo  # 本目录和目录下文件由make ctrl自动生成, 除了demo_new.go不能修改, 其他文件均需要添加具体的控制器实现(比如和service联动)
+│   │       ├── demo.go
+│   │       ├── demo_new.go
+│   │       ├── demo_v1_create.go
+│   │       ├── demo_v1_delete.go
+│   │       ├── demo_v1_get_list.go
+│   │       ├── demo_v1_get_one.go
+│   │       └── demo_v1_update.go
 │   ├── dao  # 数据访问对象，这是一层抽象对象，用于和底层数据库交互，仅包含最基础的 CURD 方法. dao层通过框架的ORM抽象层组件与底层真实的数据库交互
 │   │   ├── demo.go
 │   │   └── internal
@@ -801,27 +811,54 @@ redis:
 
 #### 3. 编写 api 层代码
 
-位置: `api/v1/`
+位置: `api/demo/v1/demo.go`
 
 定义业务侧数据结构, 提供对外接口的输入/输出数据结构, 定义访问路由 path, 请求方法, 数据校验, api 文档等.
+
+注意: 目录结构必须遵守这个模式规范 `api/模块名称/版本号/模块名称.go`
 
 示例:
 
 ```go
-// api/v1/demo.go
+// api/demo/v1/demo.go
 
-type DemoCreateReq struct {
+type CreateReq struct {
 	g.Meta `path:"/demo" method:"post" tags:"DemoService" summary:"Create a demo record"`
 	Fielda string `p:"fileda" v:"required|passport|length:4,30"`
 	Fieldb string `p:"filedb" v:"required|length:10,30"`
 }
 
-type DemoCreateRes struct {
+type CreateRes struct {
 	ID uint `json:"id"`
 }
 ```
 
-#### 4. 编写 model 层代码
+#### 4. 自动生成 api interface 文件和 controller 代码
+
+编写完
+
+```sh
+$ make ctrl
+```
+
+该命令行会根据开发者编写的`api/demo/v1/demo.go`文件自动生成:
+
+1. api interface 文件
+
+   `api/demo/demo.go`
+
+2. controller 代码
+
+   ```sh
+   ├── internal
+   │   ├── controller
+   │   │   └── demo
+   │   │       ├── demo.go
+   │   │       ├── demo_new.go  # 不可变更
+   │   │       ├── demo_v1_create.go  # 我们只需要在这里填充controller的具体实现
+   ```
+
+#### 5. 编写 model 层代码
 
 位置: `internal/model/`
 
@@ -845,7 +882,7 @@ type DemoCreateOutput struct {
 
 > 参考: https://goframe.org/pages/viewpage.action?pageId=7295964
 
-#### 5. 编写 service 层代码
+#### 6. 编写 service 层代码
 
 ##### a. 编写具体的业务实现(`internal/logic/`)
 
@@ -928,43 +965,47 @@ import _ "gf2-demo/internal/logic"
 
 > 参考: https://goframe.org/pages/viewpage.action?pageId=49770772
 
-#### 6. 编写 controller 层代码
+#### 7. 编写 controller 层代码
 
 位置: `internal/controller/`
 
-解析 api 层(`api/v1/`)定义的业务侧用户输入数据结构, 组装为 model 层(`internal/model/`)定义的数据侧输入数据结构实例, 调用 `internal/service/` 层的服务, 最后直接将结果或错误 return 即可(响应中间件会统一拦截处理, 按规范响应用户).
+controller 代码文件前面已经通过`make ctrl`自动生成了, 我们只需要在适当的位置填充具体实现即可.
+
+具体实现如何编写:
+
+解析 api 层(`api/demo/v1/demo.go`)定义的业务侧用户输入数据结构, 组装为 model 层(`internal/model/`)定义的数据侧输入数据结构实例, 调用 `internal/service/` 层的服务, 最后直接将结果或错误 return 即可(响应中间件会统一拦截处理, 按规范响应用户).
 
 示例:
 
 ```go
-// internal/controller/demo.go
+// internal/controller/demo/demo_v1_create.go
 
-import 	"gf2-demo/internal/service"
+import (
+	"context"
 
-var (
-	Demo = cDemo{}
+	v1 "gf2-demo/api/demo/v1"
+	"gf2-demo/internal/model"
+	"gf2-demo/internal/service"
 )
 
-type cDemo struct{}
-
-func (c *cDemo) Create(ctx context.Context, req *v1.DemoCreateReq) (*v1.DemoCreateRes, error) {
+func (c *ControllerV1) Create(ctx context.Context, req *v1.CreateReq) (res *v1.CreateRes, err error) {
 	data := model.DemoCreateInput{
 		Fielda: req.Fielda,
 		Fieldb: req.Fieldb,
 	}
 
-	res, err := service.Demo().Create(ctx, data)
+	result, err := service.Demo().Create(ctx, data)
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.DemoCreateRes{ID: res.ID}, err
+	return &v1.CreateRes{ID: result.ID}, err
 }
 ```
 
-#### 7. 路由注册
+#### 8. 路由注册
 
-位置: `internal/cmd/apiserver/`
+位置: `internal/cmd/apiserver/apiserver.go`
 
 路由注册, 调用 controller 层(`internal/controller/`), 对外暴露接口.
 
@@ -973,7 +1014,7 @@ func (c *cDemo) Create(ctx context.Context, req *v1.DemoCreateReq) (*v1.DemoCrea
 ```go
 // internal/cmd/apiserver/apiserver.go
 
-import	"gf2-demo/internal/controller"
+import	"gf2-demo/internal/controller/demo"
 
 var (
 	Main = gcmd.Command{
@@ -983,9 +1024,8 @@ var (
 
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
 				group.Bind(
-
-					// 对外暴露的接口路由集合: 是 /v1 和 api/v1/demo.go 文件下的所有DemoXxxReq结构体定义的 path 的组合
-					controller.Demo,
+					// 对外暴露的接口路由集合: 是 "/v1" 和 api/demo/v1/demo.go 文件中的所有XxxReq结构体定义的 path 的组合
+					demo.NewV1(),
 				)
 			})
 
@@ -996,7 +1036,7 @@ var (
 )
 ```
 
-#### 8. 接口访问测试
+#### 9. 接口访问测试
 
 ```sh
 # 运行
