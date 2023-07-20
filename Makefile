@@ -94,6 +94,12 @@ lint: lint.install
 	@echo "******** golangci-lint run ********"
 	@golangci-lint run --timeout=10m
 
+##   ctrl: Generate Go files for Controller
+.PHONY: ctrl
+ctrl: cli.install
+	@echo "******** gf gen ctrl ********"
+	@gf gen ctrl
+
 ##   dao: Generate Go files for Dao/Do/Entity
 .PHONY: dao
 dao: cli.install
@@ -108,26 +114,26 @@ service: cli.install
 
 ##   run: Run gf2-demo-api for development environment
 .PHONY: run
-run: cli.install dao service
+run: cli.install ctrl dao service
 	@echo "******** gf run ${APISERVER_PATH} ********"
 	@gf run ${APISERVER_PATH}
 
 ##   run.cli: Run gf2-demo-cli for development environment
 .PHONY: run.cli
-run.cli: cli.install dao service
+run.cli: cli.install ctrl dao service
 	@echo "******** gf run ${CLI_PATH} ********"
 	@gf run ${CLI_PATH}
 
 ##   build: Build gf2-demo-api binary
 .PHONY: build
-build: cli.install service
+build: cli.install ctrl service
 	@echo "******** gf build ${APISERVER_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@gf build ${APISERVER_PATH} ${GF_BUILD_ARGS}
 
 ##   build.cli: Build gf2-demo-cli binary
 .PHONY: build.cli
-build.cli: cli.install service
+build.cli: cli.install ctrl service
 	@echo "******** gf build ${CLI_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@gf build ${CLI_PATH} ${GF_BUILD_ARGS}
