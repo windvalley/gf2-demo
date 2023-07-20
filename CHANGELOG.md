@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.12.0
+
+### Added
+
+- 增加 mongodb client (`internal/pkg/mongodb`)
+- `Makefile` 增加 `make ctrl`
+- gf 版本升级到 `v2.5.0`
+
+### Changed
+
+- 优化 redis 配置
+- `api/`, `internal/controller/` 代码适配 `gf v2.5.0`
+- 更新 README.md 文档, 适配 `gf v2.5.0`
+
 ## v0.11.0
 
 ### Added
