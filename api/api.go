@@ -1,4 +1,4 @@
-package v1
+package api
 
 type CommonPaginationReq struct {
 	PageNum  int `json:"page_num" in:"query" v:"min:0#分页号码错误"  dc:"分页号码, 默认1"`

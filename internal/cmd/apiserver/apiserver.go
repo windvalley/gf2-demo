@@ -11,7 +11,7 @@ import (
 
 	"gf2-demo/utility"
 
-	"gf2-demo/internal/controller"
+	"gf2-demo/internal/controller/demo"
 	"gf2-demo/internal/service"
 )
 
@@ -87,7 +87,7 @@ var (
 			)
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
 				group.Bind(
-					controller.Demo,
+					demo.NewV1(),
 				)
 			})
 			s.Run()
