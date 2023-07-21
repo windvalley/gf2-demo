@@ -13,8 +13,9 @@
 - 编译的二进制文件可打印当前应用的版本信息
 - 中间件统一拦截响应, 规范响应格式, 规范业务错误码
 - 完善 HTTP 服务访问日志、HTTP 服务错误日志、SQL 日志、开发者打印的日志、其他可执行命令的日志配置
+- 封装 `Redis` 常用工具库: `rediscache`, `redislock`, `redismq`, `redisdelaymq`, `redispubsub`
+- 通过工具自动生成数据库层、服务接口层、控制器层代码
 - 完整的增删改查接口示例和完善的开发流程文档, 帮助开发者快速上手
-- 封装 `Redis` 常用工具库: `rediscache`, `redislock`, `redismq`, `redisdelaymq`, `redispubsub`, 帮助提升开发效率
 - 项目部署遵循不可变基础设施原则, 不论是传统单体部署还是容器云部署方式
 - 通过 `Makefile` 管理项目: `make run`, `make build`, `make dao`, `make service` 等
 - 增加 `golangci-lint` 配置文件 `.golangci.yml`, 统一团队代码风格, 保障团队代码质量
@@ -162,11 +163,12 @@ Find more information at: https://github.com/windvalley/gf2-demo
   - [1. 设计表结构, 创建物理表](#1-设计表结构-创建物理表)
   - [2. 自动生成数据层相关代码](#2-自动生成数据层相关代码)
   - [3. 编写 api 层代码](#3-编写-api-层代码)
-  - [4. 编写 model 层代码](#4-编写-model-层代码)
-  - [5. 编写 service 层代码](#5-编写-service-层代码)
-  - [6. 编写 controller 层代码](#6-编写-controller-层代码)
-  - [7. 路由注册](#7-路由注册)
-  - [8. 接口访问测试](#8-接口访问测试)
+  - [4. 自动生成 controller 层框架代码](#4-自动生成-controller-层框架代码)
+  - [5. 编写 model 层代码](#5-编写-model-层代码)
+  - [6. 编写 service 层代码](#6-编写-service-层代码)
+  - [7. 编写 controller 层代码](#7-编写-controller-层代码)
+  - [8. 路由注册](#8-路由注册)
+  - [9. 接口访问测试](#9-接口访问测试)
 - [代码质量](#代码质量-)
 - [项目部署](#项目部署-)
   - [Systemctl](#systemctl)
@@ -188,8 +190,8 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   └── demo  # demo模块
 │       ├── demo.go  # demo模块的api interface, 由make ctrl自动生成
 │       └── v1  # 版本控制
-│           └── demo.go  # 开发者按照规范编写的接口文件, make ctrl会通过本文件自动生成controller代码
-├── bin  # make build 和 make build.cli 生成的二进制可执行文件所在目录
+│           └── demo.go  # 开发者按照规范编写的接口文件, make ctrl会根据本文件自动生成controller代码
+├── bin  # make build 和 make build.cli 生成的二进制可执行文件所在目录, 不要提交到仓库
 │   ├── darwin_amd64
 │   │   ├── gf2-demo-api
 │   │   └── gf2-demo-cli
@@ -215,7 +217,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │   └── codes.go
 │   ├── consts  # 项目所有通用常量定义
 │   │   └── consts.go
-│   ├── controller  # 对外接口实现: 接收/解析用户输入参数的入口/接口层
+│   ├── controller  # 控制器层: 接收/解析用户输入参数的入口
 │   │   └── demo  # 本目录和目录下文件由make ctrl自动生成, 除了demo_new.go不能修改, 其他文件均需要添加具体的控制器实现(比如和service联动)
 │   │       ├── demo.go
 │   │       ├── demo_new.go
@@ -224,7 +226,7 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │       ├── demo_v1_get_list.go
 │   │       ├── demo_v1_get_one.go
 │   │       └── demo_v1_update.go
-│   ├── dao  # 数据访问对象，这是一层抽象对象，用于和底层数据库交互，仅包含最基础的 CURD 方法. dao层通过框架的ORM抽象层组件与底层真实的数据库交互
+│   ├── dao  # 数据访问对象, 由make dao自动生成. 这是一层抽象对象, 用于和底层数据库交互, 仅包含最基础的 CURD 方法. dao层通过框架的ORM抽象层组件与底层真实的数据库交互
 │   │   ├── demo.go
 │   │   └── internal
 │   │       └── demo.go
@@ -233,19 +235,19 @@ Find more information at: https://github.com/windvalley/gf2-demo
 │   │   ├── demo  # demo服务的具体实现
 │   │   │   └── demo.go
 │   │   └── middleware  # 中间件
-│   │       ├── accessuser.go
 │   │       ├── middleware.go
+│   │       ├── accessuser.go
 │   │       ├── response.go  # 统一拦截规范响应
 │   │       └── traceid.go
 │   ├── model  # 数据结构管理模块, 管理数据实体对象, 以及输入与输出数据结构定义. 这里的model不仅负责维护数据实体对象(entity)结构定义, 也包括所有的输入/输出数据结构定义, 被api/dao/service共同引用
 │   │   ├── demo.go  # 输入/输出数据结构定义
-│   │   ├── do  # 领域对象: 用于dao数据操作中业务模型与实例模型转换. NOTE: 由工具维护, 不要手动修改
+│   │   ├── do  # 领域对象: 用于dao数据操作中业务模型与实例模型转换. NOTE: 由工具维护(make dao), 不要手动修改
 │   │   │   └── demo.go
-│   │   └── entity  # 数据模型: 是模型与数据集合的一对一关系, 通常和数据表一一对应. NOTE: 由工具维护, 不要手动修改
+│   │   └── entity  # 数据模型: 是模型与数据集合的一对一关系, 通常和数据表一一对应. NOTE: 由工具维护(make dao), 不要手动修改
 │   │   │   └── demo.go
 │   ├── packed
 │   │   └── packed.go
-│   └── service  # 业务接口: 用于业务模块解耦的接口定义层. 具体的接口实现在logic中进行注入. NOTE: 由工具维护, 不要手动修改
+│   └── service  # 业务接口层: 用于业务模块解耦的接口定义层. 具体的接口实现在logic中进行注入. NOTE: 由工具维护(make service), 不要手动修改
 │       ├── demo.go
 │       └── middleware.go
 ├── manifest  # 交付清单: 包含应用配置文件, 部署文件等
@@ -833,21 +835,23 @@ type CreateRes struct {
 }
 ```
 
-#### 4. 自动生成 api interface 文件和 controller 代码
+> 编写规范请参考文档: https://goframe.org/pages/viewpage.action?pageId=93880327
 
-编写完
+#### 4. 自动生成 controller 层框架代码
+
+编写完 api 定义代码(`api/demo/v1/demo.go`)后, 在项目根目录执行如下命令行:
 
 ```sh
 $ make ctrl
 ```
 
-该命令行会根据开发者编写的`api/demo/v1/demo.go`文件自动生成:
+该命令行会根据开发者编写的 `api/demo/v1/demo.go` api 定义文件自动生成:
 
 1. api interface 文件
 
    `api/demo/demo.go`
 
-2. controller 代码
+2. controller 层代码
 
    ```sh
    ├── internal
@@ -1103,10 +1107,10 @@ $ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 2. 集成到编辑器或 IDE
 
-请参考官方文档: `https://golangci-lint.run/usage/integrations/`
+   请参考官方文档: `https://golangci-lint.run/usage/integrations/`
 
-强烈建议使用此种方式, 可实时提示代码存在的问题, 而不是等到编译的时候才知道哪里出错了,
-不但提高代码质量, 还能提高编码效率.
+   强烈建议使用此种方式, 可实时提示代码存在的问题, 而不是等到编译的时候才知道哪里出错了,
+   不但提高代码质量, 还能提高编码效率.
 
 ### 项目部署 [⌅](#-documentation)
 
@@ -1469,6 +1473,7 @@ Targets:
 
     cli          Install/Update to the latest Gf Cli tool
     lint         Run golangci-lint
+    ctrl         Generate Go files for Controller
     dao          Generate Go files for Dao/Do/Entity
     service      Generate Go files for Service
     run          Run gf2-demo-api for development environment
@@ -1505,6 +1510,9 @@ $ make lint
 
 # 物理表有增加或表结构有更新时, 自动生成或更新数据层相关代码
 $ make dao
+
+# 自动生成 internal/controller/ 控制器层代码
+$ make ctrl
 
 # internal/logic/ 有代码变动后, 使用此命令自动生成 internal/service/ 接口代码
 $ make service
