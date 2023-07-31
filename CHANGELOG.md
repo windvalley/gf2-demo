@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.13.0
+
+### Added
+
+- `make ctrl` 增加自动生成 sdk 代码功能 (生成的 sdk 代码位置: `api/sdk/`)
+
+### Changed
+
+- gf 版本升级到 `v2.5.1`
+- 当前项目 package 名称由 `gf2-demo` 改为 `github.com/windvalley/gf2-demo`
+- 优化 `hack/change_project_name.sh`, 支持带有路径的项目名称
+
 ## v0.12.0
 
 ### Added

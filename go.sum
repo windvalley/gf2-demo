@@ -40,6 +40,8 @@ github.com/gogf/gf/contrib/drivers/mysql/v2 v2.5.1 h1:bVnTFI/eZ758VB8IEE843bEklj
 github.com/gogf/gf/contrib/drivers/mysql/v2 v2.5.1/go.mod h1:SQFmYhpzUJWdtMQ4HrqzEwb+947XzH5DUreIqE77FgQ=
 github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.1 h1:OQtx910hHPRVwl5SLecgX9PtAIF3kL020/3P2hO8Hls=
 github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.1/go.mod h1:YTLqnLfWG1W4TeifiqUGcNeRXnVonAAv8vIZtYyMGzU=
+github.com/gogf/gf/contrib/sdk/httpclient/v2 v2.5.1 h1:RYK2IuiiK+eKYYE5rtZxoRhbxMoXlG9owNo8Nz8PFAU=
+github.com/gogf/gf/contrib/sdk/httpclient/v2 v2.5.1/go.mod h1:kuAX5llXrag6Hqnl7X/jWaYxXhSOUn28xMQQkKdP180=
 github.com/gogf/gf/v2 v2.5.1 h1:mkmqWrKTsuLRnv4OL1CS9voPMqfSx/DSY7JJnd/HnfA=
 github.com/gogf/gf/v2 v2.5.1/go.mod h1:9XLWIkCQmaWIugHag4AEOtex0LlVeUHsUxqjAC8f6ew=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
