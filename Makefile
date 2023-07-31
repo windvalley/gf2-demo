@@ -74,7 +74,7 @@ cli.install:
 	if ! gf -v >/dev/null 2>&1; then \
   		echo "GoFame CLI is not installed, start proceeding auto installation..."; \
 		make cli; \
-	elif [[ $$(gf -v|awk -F: '/GF Version:/{print $$2}' | awk '{gsub(/^[[:space:]]+|[[:space:]]+$$/, "")}1') != ${GF_VERSION} ]];then \
+	elif [[ $$(gf -v|grep -i cli|grep -Eio "v[0-9]+\.[0-9]+\.[0-9]+"|head -1) != ${GF_VERSION} ]];then \
   		echo "GoFame CLI version is not equal to ${GF_VERSION}, start proceeding auto installation..."; \
 		make cli; \
 	else \
