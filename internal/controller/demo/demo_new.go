@@ -5,7 +5,7 @@
 package demo
 
 import (
-	"gf2-demo/api/demo"
+	"github.com/windvalley/gf2-demo/api/demo"
 )
 
 type ControllerV1 struct{}

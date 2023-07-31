@@ -3,10 +3,10 @@ package demo
 import (
 	"context"
 
-	"gf2-demo/api"
-	v1 "gf2-demo/api/demo/v1"
-	"gf2-demo/internal/model"
-	"gf2-demo/internal/service"
+	"github.com/windvalley/gf2-demo/api"
+	v1 "github.com/windvalley/gf2-demo/api/demo/v1"
+	"github.com/windvalley/gf2-demo/internal/model"
+	"github.com/windvalley/gf2-demo/internal/service"
 )
 
 func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1.GetListRes, err error) {

@@ -7,7 +7,7 @@ package demo
 import (
 	"context"
 	
-	"gf2-demo/api/demo/v1"
+	"github.com/windvalley/gf2-demo/api/demo/v1"
 )
 
 type IDemoV1 interface {

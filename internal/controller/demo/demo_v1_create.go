@@ -3,9 +3,9 @@ package demo
 import (
 	"context"
 
-	v1 "gf2-demo/api/demo/v1"
-	"gf2-demo/internal/model"
-	"gf2-demo/internal/service"
+	v1 "github.com/windvalley/gf2-demo/api/demo/v1"
+	"github.com/windvalley/gf2-demo/internal/model"
+	"github.com/windvalley/gf2-demo/internal/service"
 )
 
 func (c *ControllerV1) Create(ctx context.Context, req *v1.CreateReq) (res *v1.CreateRes, err error) {

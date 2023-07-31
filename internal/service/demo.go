@@ -7,8 +7,8 @@ package service
 
 import (
 	"context"
-	"gf2-demo/internal/model"
-	"gf2-demo/internal/model/entity"
+	"github.com/windvalley/gf2-demo/internal/model"
+	"github.com/windvalley/gf2-demo/internal/model/entity"
 )
 
 type (

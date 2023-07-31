@@ -1,6 +1,6 @@
 package middleware
 
-import "gf2-demo/internal/service"
+import "github.com/windvalley/gf2-demo/internal/service"
 
 type (
 	sMiddleware struct{}

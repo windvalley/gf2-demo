@@ -5,7 +5,7 @@
 package dao
 
 import (
-	"gf2-demo/internal/dao/internal"
+	"github.com/windvalley/gf2-demo/internal/dao/internal"
 )
 
 // internalDemoDao is internal type for wrapping internal DAO implements.

@@ -9,32 +9,32 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
-	"gf2-demo/utility"
+	"github.com/windvalley/gf2-demo/utility"
 
-	"gf2-demo/internal/controller/demo"
-	"gf2-demo/internal/service"
+	"github.com/windvalley/gf2-demo/internal/controller/demo"
+	"github.com/windvalley/gf2-demo/internal/service"
 )
 
 var (
 	Main = gcmd.Command{
-		Name:        "gf2-demo-api",
+		Name:        "github.com/windvalley/gf2-demo-api",
 		Brief:       "An API Server Demo",
 		Description: "An API server demo using GoFrame V2",
-		Usage:       "gf2-demo-api [OPTION]",
+		Usage:       "github.com/windvalley/gf2-demo-api [OPTION]",
 		Examples: `
 			Dev:
-				./gf2-demo-api
+				./github.com/windvalley/gf2-demo-api
 
 			Test:
-				./gf2-demo-api -c config.test.yaml
+				./github.com/windvalley/gf2-demo-api -c config.test.yaml
 				or 
-				GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./gf2-demo-api
+				GF_GCFG_FILE=config.test.yaml GF_GERROR_BRIEF=true ./github.com/windvalley/gf2-demo-api
 
 			Prod:
-				./gf2-demo-api -c config.prod.yaml
+				./github.com/windvalley/gf2-demo-api -c config.prod.yaml
 				or 
-				GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./gf2-demo-api`,
-		Additional: "Find more information at: https://github.com/windvalley/gf2-demo",
+				GF_GCFG_FILE=config.prod.yaml GF_GERROR_BRIEF=true ./github.com/windvalley/gf2-demo-api`,
+		Additional: "Find more information at: https://github.com/windvalley/github.com/windvalley/gf2-demo",
 		Arguments: []gcmd.Argument{
 			{
 				Name:   "version",

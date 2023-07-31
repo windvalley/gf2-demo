@@ -1,4 +1,4 @@
-module gf2-demo
+module github.com/windvalley/gf2-demo
 
 go 1.15
 

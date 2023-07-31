@@ -4,8 +4,8 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 
-	"gf2-demo/api"
-	"gf2-demo/internal/model"
+	"github.com/windvalley/gf2-demo/api"
+	"github.com/windvalley/gf2-demo/internal/model"
 )
 
 /*

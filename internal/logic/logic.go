@@ -5,6 +5,6 @@
 package logic
 
 import (
-	_ "gf2-demo/internal/logic/demo"
-	_ "gf2-demo/internal/logic/middleware"
+	_ "github.com/windvalley/gf2-demo/internal/logic/demo"
+	_ "github.com/windvalley/gf2-demo/internal/logic/middleware"
 )

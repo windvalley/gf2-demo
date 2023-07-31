@@ -10,7 +10,7 @@ import (
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/util/gvalid"
 
-	"gf2-demo/internal/codes"
+	"github.com/windvalley/gf2-demo/internal/codes"
 )
 
 type response struct {

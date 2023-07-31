@@ -6,9 +6,9 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 
-	v1 "gf2-demo/api/demo/v1"
-	"gf2-demo/internal/codes"
-	"gf2-demo/internal/service"
+	v1 "github.com/windvalley/gf2-demo/api/demo/v1"
+	"github.com/windvalley/gf2-demo/internal/codes"
+	"github.com/windvalley/gf2-demo/internal/service"
 )
 
 func (c *ControllerV1) GetOne(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOneRes, err error) {

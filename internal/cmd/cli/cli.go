@@ -9,30 +9,30 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
-	"gf2-demo/internal/consts"
-	"gf2-demo/utility"
+	"github.com/windvalley/gf2-demo/internal/consts"
+	"github.com/windvalley/gf2-demo/utility"
 )
 
 var (
 	Main = gcmd.Command{
-		Name:        "gf2-demo-cli",
+		Name:        "github.com/windvalley/gf2-demo-cli",
 		Brief:       "A command-line tool demo",
 		Description: "A command-line tool demo using GoFrame V2",
-		Usage:       "gf2-demo-cli [OPTION]",
+		Usage:       "github.com/windvalley/gf2-demo-cli [OPTION]",
 		Examples: `
 			Dev:
-				./gf2-demo-cli
+				./github.com/windvalley/gf2-demo-cli
 
 			Test:
-				./gf2-demo-cli -c config.test.yaml
+				./github.com/windvalley/gf2-demo-cli -c config.test.yaml
 				or 
-				GF_GCFG_FILE=config.test.yaml ./gf2-demo-cli
+				GF_GCFG_FILE=config.test.yaml ./github.com/windvalley/gf2-demo-cli
 
 			Prod:
-				./gf2-demo-cli -c config.prod.yaml
+				./github.com/windvalley/gf2-demo-cli -c config.prod.yaml
 				or 
-				GF_GCFG_FILE=config.prod.yaml ./gf2-demo-cli`,
-		Additional: "Find more information at: https://github.com/windvalley/gf2-demo",
+				GF_GCFG_FILE=config.prod.yaml ./github.com/windvalley/gf2-demo-cli`,
+		Additional: "Find more information at: https://github.com/windvalley/github.com/windvalley/gf2-demo",
 		Arguments: []gcmd.Argument{
 			{
 				Name:   "version",

@@ -6,12 +6,12 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 
-	"gf2-demo/internal/codes"
-	"gf2-demo/internal/dao"
-	"gf2-demo/internal/model"
-	"gf2-demo/internal/model/do"
-	"gf2-demo/internal/model/entity"
-	"gf2-demo/internal/service"
+	"github.com/windvalley/gf2-demo/internal/codes"
+	"github.com/windvalley/gf2-demo/internal/dao"
+	"github.com/windvalley/gf2-demo/internal/model"
+	"github.com/windvalley/gf2-demo/internal/model/do"
+	"github.com/windvalley/gf2-demo/internal/model/entity"
+	"github.com/windvalley/gf2-demo/internal/service"
 )
 
 type sDemo struct{}
