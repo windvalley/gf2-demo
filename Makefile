@@ -16,7 +16,7 @@ CLI_PATH = cmd/gf2-demo-cli/${CLI_NAME}.go
 VERSION = $(shell git describe --tags --always --match='v*')
 
 # Be same as gf version in go.mod.
-GF_VERSION = v2.5.0
+GF_VERSION = v2.5.1
 
 SED = sed
 ifeq ($(shell uname), Darwin)
@@ -98,7 +98,7 @@ lint: lint.install
 .PHONY: ctrl
 ctrl: cli.install
 	@echo "******** gf gen ctrl ********"
-	@gf gen ctrl
+	@gf gen ctrl -k api/sdk
 
 ##   dao: Generate Go files for Dao/Do/Entity
 .PHONY: dao
