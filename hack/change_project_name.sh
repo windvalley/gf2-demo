@@ -20,7 +20,7 @@ print_usage() {
 }
 
 [[ -z "$1" ]] && {
-	print_uage
+	print_usage
 
 	exit 1
 }
@@ -45,6 +45,9 @@ SED="sed"
 # shellcheck disable=SC2038
 find ../ -type f -name "*.go" -o -name "go.mod" |
 	xargs $SED -i "s#${CURRENT_PROJECT}#${NEW_PROJECT}#"
+# shellcheck disable=SC2038
+find ../internal/cmd/ -type f -name "*.go" |
+	xargs $SED -i "s#${CURRENT_PROJECT_NAME}#${NEW_PROJECT_NAME}#"
 
 # shellcheck disable=SC2038
 find ../ -type f -name "Makefile" \
