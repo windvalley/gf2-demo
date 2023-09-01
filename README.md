@@ -1125,11 +1125,18 @@ $ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 2. 设置目标服务器(修改 `deploy.sh` 脚本)
 
    ```sh
-   # 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
-   deploy_server="gf2-demo.sre.im"
-   # 用于连接目标服务器的用户名
+   # 用于连接目标服务器的用户名.
+   # NOTE: 不要使用个人账号部署和运行服务, 建议建立独立的公共账号部署和运行应用.
    deploy_user="vagrant"
-   # 项目部署目录
+   # 目标部署服务器.
+   # NOTE:
+   # 1. 请提前配置发布机到目标服务器之间的ssh key信任:
+   #    1) ssh-keygen -t rsa -b 4096 -C "vagrant@$(hostname)"
+   #    2) ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@$(deploy_server)
+   # 2. 目标机器上解决sudo执行命令提示输入密码的问题:
+   #    执行visudo, 末尾添加一行: vagrant ALL=(ALL:ALL) NOPASSWD:ALL
+   deploy_server="gf2-demo.sre.im"
+   # 部署目录的权限应该为$deploy_user: chown -R $deploy_user. $deploy_dir
    deploy_dir=/app/$project_name
    ```
 
@@ -1197,13 +1204,12 @@ $ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 2. 设置目标服务器(修改 `deploy.sh` 脚本)
 
    ```sh
-   # 目标服务器, 请提前配置发布机到目标服务器之间的ssh key信任
    deploy_server="gf2-demo.sre.im"
-   # 用于连接目标服务器的用户名
    deploy_user="vagrant"
-   # 项目部署目录
    deploy_dir=/app/$project_name
    ```
+
+   相关说明参考 systemctl 部署示例.
 
 3. 在目标服务器上提前安装 supervisor
 
