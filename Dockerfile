@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Step 1: build binary
-FROM golang:1.17 as builder
+FROM golang:1.18 as builder
 
 ENV GOPROXY https://goproxy.cn,direct
 

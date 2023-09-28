@@ -16,7 +16,7 @@ CLI_PATH = cmd/gf2-demo-cli/${CLI_NAME}.go
 VERSION = $(shell git describe --tags --always --match='v*')
 
 # Be same as gf version in go.mod.
-GF_VERSION = v2.5.1
+GF_VERSION = v2.5.4
 
 SED = sed
 ifeq ($(shell uname), Darwin)

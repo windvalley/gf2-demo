@@ -26,6 +26,7 @@ func (i *implementer) DemoV1() demo.IDemoV1 {
 	client.Client = client.Prefix(prefix)
 	return &implementerDemoV1{client}
 }
+
 func (i *implementerDemoV1) GetOne(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOneRes, err error) {
 	err = i.Request(ctx, req, &res)
 	return

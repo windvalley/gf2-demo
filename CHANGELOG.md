@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.14.0
+
+### Changed
+
+- GoFrame 版本升级到 `v2.5.4`
+- Go 的最低版本要求由`1.15`变更为`1.18`
+- 优化命令行 `make cli.install`
+- 优化脚本 `hack/change_project_name.sh`
+- 优化`systemctl`和`supervisor`部署方式
+
 ## v0.13.0
 
 ### Added
