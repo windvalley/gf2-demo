@@ -1,6 +1,13 @@
 # References:
 # https://seisman.github.io/how-to-write-makefile/index.html
 
+# Be same as gf version in go.mod.
+GF_VERSION = v2.5.4
+GF_PATH = ${HOME}/.gf/${GF_VERSION}
+GF_BIN = ${GF_PATH}/gf
+
+export PATH := ${GF_PATH}:${GOROOT/bin}:${PATH}
+
 ROOT_DIR    = $(shell pwd)
 NAMESPACE   = "default"
 
@@ -14,9 +21,6 @@ APISERVER_PATH = cmd/gf2-demo-api/${APISERVER_NAME}.go
 CLI_PATH = cmd/gf2-demo-cli/${CLI_NAME}.go
 
 VERSION = $(shell git describe --tags --always --match='v*')
-
-# Be same as gf version in go.mod.
-GF_VERSION = v2.5.4
 
 SED = sed
 ifeq ($(shell uname), Darwin)
@@ -62,8 +66,8 @@ cli:
 	@set -e; \
 	wget -O gf https://github.com/gogf/gf/releases/download/${GF_VERSION}/gf_$(shell go env GOOS)_$(shell go env GOARCH) && \
 	chmod +x gf && \
-	./gf install -y && \
-	rm ./gf
+	mkdir -p ${GF_PATH} && \
+	mv ./gf ${GF_PATH}
 
 
 # Check and install CLI tool
@@ -71,10 +75,10 @@ cli:
 cli.install:
 	@echo "******** install gf cli ********"
 	@set -e; \
-	if ! gf -v >/dev/null 2>&1; then \
+	if ! ${GF_BIN} -v >/dev/null 2>&1; then \
   		echo "GoFame CLI is not installed, start proceeding auto installation..."; \
 		make cli; \
-	elif [[ $$(gf -v|grep -i cli|grep -Eio "v[0-9]+\.[0-9]+\.[0-9]+"|head -1) != ${GF_VERSION} ]];then \
+	elif [[ $$(${GF_BIN} -v|grep -i cli|grep -Eio "v[0-9]+\.[0-9]+\.[0-9]+"|head -1) != ${GF_VERSION} ]];then \
   		echo "GoFame CLI version is not equal to ${GF_VERSION}, start proceeding auto installation..."; \
 		make cli; \
 	else \
@@ -98,45 +102,45 @@ lint: lint.install
 .PHONY: ctrl
 ctrl: cli.install
 	@echo "******** gf gen ctrl ********"
-	@gf gen ctrl -k api/sdk
+	@${GF_BIN} gen ctrl -k api/sdk
 
 ##   dao: Generate Go files for Dao/Do/Entity
 .PHONY: dao
 dao: cli.install
 	@echo "******** gf gen dao ********"
-	@gf gen dao
+	@${GF_BIN} gen dao
 
 ##   service: Generate Go files for Service
 .PHONY: service
 service: cli.install
 	@echo "******** gf gen service ********"
-	@gf gen service
+	@${GF_BIN} gen service
 
 ##   run: Run gf2-demo-api for development environment
 .PHONY: run
 run: ctrl dao service
 	@echo "******** gf run ${APISERVER_PATH} ********"
-	@gf run ${APISERVER_PATH}
+	@${GF_BIN} run ${APISERVER_PATH}
 
 ##   run.cli: Run gf2-demo-cli for development environment
 .PHONY: run.cli
 run.cli: ctrl dao service
 	@echo "******** gf run ${CLI_PATH} ********"
-	@gf run ${CLI_PATH}
+	@${GF_BIN} run ${CLI_PATH}
 
 ##   build: Build gf2-demo-api binary
 .PHONY: build
 build: ctrl service
 	@echo "******** gf build ${APISERVER_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@gf build ${APISERVER_PATH} ${GF_BUILD_ARGS}
+	@${GF_BIN} build ${APISERVER_PATH} ${GF_BUILD_ARGS}
 
 ##   build.cli: Build gf2-demo-cli binary
 .PHONY: build.cli
 build.cli: ctrl service
 	@echo "******** gf build ${CLI_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@gf build ${CLI_PATH} ${GF_BUILD_ARGS}
+	@${GF_BIN} build ${CLI_PATH} ${GF_BUILD_ARGS}
 
 # Build image, deploy image and yaml to current kubectl environment and make port forward to local machine
 .PHONY: start
