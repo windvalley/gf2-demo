@@ -111,6 +111,10 @@ func (s *sDemo) List(ctx context.Context, in model.DemoListInput) (*model.DemoLi
 	out := &model.DemoListOutput{
 		PageNum:  in.PageNum,
 		PageSize: in.PageSize,
+		// NOTE: 给ORM的Scan方法一个初始化的空数组.
+		// 这样当ORM查询不到数据时，该数组属性仍然是一个空数组，而不是nil，
+		// 从而使序列化为JSON时不会是null值, 不利于前端处理, 而是[].
+		List: make([]model.DemoListOutputItem, 0),
 	}
 
 	listModel := m.Page(in.PageNum, in.PageSize)
@@ -122,7 +126,7 @@ func (s *sDemo) List(ctx context.Context, in model.DemoListInput) (*model.DemoLi
 		return nil, err
 	}
 	if len(out.List) == 0 {
-		return &model.DemoListOutput{}, nil
+		return out, nil
 	}
 
 	count, err := m.Count()

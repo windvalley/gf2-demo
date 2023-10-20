@@ -22,8 +22,7 @@ systemd_service="${app_name}.service"
 
 # 不要使用个人账号部署和运行服务, 建议建立独立的公共账号部署和运行应用.
 deploy_user="vagrant"
-# NOTE:
-# 1. 请提前配置发布机到目标服务器之间的ssh key信任:
+# NOTE: 1. 请提前配置发布机到目标服务器之间的ssh key信任:
 #    1) ssh-keygen -t rsa -b 4096 -C "vagrant@$(hostname)"
 #    2) ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@$(deploy_server)
 # 2. 目标机器上解决sudo执行命令提示输入密码的问题:
