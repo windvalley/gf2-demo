@@ -120,27 +120,27 @@ service: cli.install
 .PHONY: run
 run: ctrl dao service
 	@echo "******** gf run ${APISERVER_PATH} ********"
-	@${GF_BIN} run ${APISERVER_PATH}
+	@go mod tidy && ${GF_BIN} run ${APISERVER_PATH} -w "manifest/config/*.yaml"
 
 ##   run.cli: Run gf2-demo-cli for development environment
 .PHONY: run.cli
 run.cli: ctrl dao service
 	@echo "******** gf run ${CLI_PATH} ********"
-	@${GF_BIN} run ${CLI_PATH}
+	@go mod tidy && ${GF_BIN} run ${CLI_PATH} -w "manifest/config/*.yaml"
 
 ##   build: Build gf2-demo-api binary
 .PHONY: build
 build: ctrl service
 	@echo "******** gf build ${APISERVER_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@${GF_BIN} build ${APISERVER_PATH} ${GF_BUILD_ARGS}
+	@go mod tidy && ${GF_BIN} build ${APISERVER_PATH} ${GF_BUILD_ARGS}
 
 ##   build.cli: Build gf2-demo-cli binary
 .PHONY: build.cli
 build.cli: ctrl service
 	@echo "******** gf build ${CLI_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
-	@${GF_BIN} build ${CLI_PATH} ${GF_BUILD_ARGS}
+	@go mod tidy && ${GF_BIN} build ${CLI_PATH} ${GF_BUILD_ARGS}
 
 # Build image, deploy image and yaml to current kubectl environment and make port forward to local machine
 .PHONY: start
