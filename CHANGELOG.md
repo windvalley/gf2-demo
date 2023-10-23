@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.15.0
+
+### Added
+
+- 增加`hack/go_switcher.sh`脚本, 用于便捷切换 Go 版本(For macOS)
+
+### Changed
+
+- GoFrame 版本升级到 `v2.5.5`
+- 优化 `make run`, 支持配置文件变化自动 reload 功能
+
 ## v0.14.0
 
 ### Changed
