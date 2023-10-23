@@ -2,7 +2,7 @@
 # https://seisman.github.io/how-to-write-makefile/index.html
 
 # Be same as gf version in go.mod.
-GF_VERSION = v2.5.4
+GF_VERSION = v2.5.5
 GF_PATH = ${HOME}/.gf/${GF_VERSION}
 GF_BIN = ${GF_PATH}/gf
 
