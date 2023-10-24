@@ -2,7 +2,7 @@
 # https://seisman.github.io/how-to-write-makefile/index.html
 
 # Be same as gf version in go.mod.
-GF_VERSION = v2.5.5
+GF_VERSION = v2.5.6
 GF_PATH = ${HOME}/.gf/${GF_VERSION}
 GF_BIN = ${GF_PATH}/gf
 
@@ -134,6 +134,7 @@ build: ctrl service
 	@echo "******** gf build ${APISERVER_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@go mod tidy && ${GF_BIN} build ${APISERVER_PATH} ${GF_BUILD_ARGS}
+	@${SED} -i '/^      version:/s/version:.*/version:/' hack/config.yaml
 
 ##   build.cli: Build gf2-demo-cli binary
 .PHONY: build.cli
@@ -141,6 +142,7 @@ build.cli: ctrl service
 	@echo "******** gf build ${CLI_PATH} ********"
 	@${SED} -i '/^      version:/s/version:.*/version: ${VERSION}/' hack/config.yaml
 	@go mod tidy && ${GF_BIN} build ${CLI_PATH} ${GF_BUILD_ARGS}
+	@${SED} -i '/^      version:/s/version:.*/version:/' hack/config.yaml
 
 # Build image, deploy image and yaml to current kubectl environment and make port forward to local machine
 .PHONY: start

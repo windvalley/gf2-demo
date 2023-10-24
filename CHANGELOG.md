@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## v0.15.1
+
+### Changed
+
+- GoFrame 版本升级到 `v2.5.6`
+- 优化 `make build` 的版本生成功能, 解决每次执行完 `make build` 后, 仓库从 `clean` 状态变为 `dirty` 状态的问题.
+
 ## v0.15.0
 
 ### Added
