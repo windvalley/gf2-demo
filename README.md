@@ -2,6 +2,7 @@
 
 [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://go.dev)
 [![Version](https://img.shields.io/github/v/release/windvalley/gf2-demo?include_prereleases)](https://github.com/windvalley/gf2-demo/releases)
+![Supports](https://img.shields.io/badge/Supports-macOS,%20Linux-orange)
 [![LICENSE](https://img.shields.io/github/license/windvalley/gf2-demo)](LICENSE)
 
 `gf2-demo` 是一个基于 [GoFrameV2](https://github.com/gogf/gf) 用来快速开发后端服务的脚手架, 目标使开发者只需关注业务逻辑的编写, 快速且规范地交付项目.
