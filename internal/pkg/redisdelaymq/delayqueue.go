@@ -69,6 +69,7 @@ func (d *DelayQueue) Produce(ctx context.Context, messages []interface{}) error 
 }
 
 // Consume 获取score小于给定时间戳(一般为消费的当前时间戳)的所有消息.
+// NOTE: 多实例同时消费时，需要使用分布式锁，避免重复消费.
 func (d *DelayQueue) Consume(ctx context.Context, timestamp int64) (gvar.Vars, error) {
 	results, err := d.client.ZRange(ctx, d.topic, 0, timestamp, gredis.ZRangeOption{
 		ByScore:    true,
