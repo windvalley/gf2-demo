@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"errors"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
@@ -80,8 +79,6 @@ var (
 			// ****************** 以下部分为业务逻辑
 
 			g.Log(consts.CliLoggerName).Info(ctx, "foo")
-
-			g.Log(consts.CliLoggerName).Error(ctx, errors.New("bar"))
 
 			return nil
 		},

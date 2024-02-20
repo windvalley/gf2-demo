@@ -1578,7 +1578,12 @@ $ make image.push
    ```
 
    > NOTE:
-   > 如果是 macOS 系统, 需要提前安装 `gsed` 命令.
+   >
+   > 1. 如果是 macOS 系统, 需要提前安装 `gsed` 命令. <br>
+   > 2. mysql 数据库配置需要根据你的实际情况进行手动修改, 有以下几处：<br>
+   >    - `manifest/config/*.yaml` <br>
+   >    - `hack/config.yaml` <br>
+   >    - `manifest/sql/gf2_demo.sql`
 
 3. 验证
 

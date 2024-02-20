@@ -10,7 +10,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "$SCRIPT_DIR" || exit 1
 
 print_usage() {
-	echo "Usage: 
+    echo "Usage: 
     $0 <new-project>
 
     Example: 
@@ -20,9 +20,9 @@ print_usage() {
 }
 
 [[ -z "$1" ]] && {
-	print_usage
+    print_usage
 
-	exit 1
+    exit 1
 }
 
 # i.e.: github.com/windvalley/gf2-demo
@@ -34,9 +34,9 @@ NEW_PROJECT=$1
 NEW_PROJECT_NAME=${NEW_PROJECT##*/}
 
 [[ "${NEW_PROJECT}" == "${CURRENT_PROJECT}" ]] && {
-	printf "new project name must be different from current project name\n\n"
-	print_usage
-	exit 1
+    printf "new project name must be different from current project name\n\n"
+    print_usage
+    exit 1
 }
 
 SED="sed"
@@ -44,24 +44,30 @@ SED="sed"
 
 # shellcheck disable=SC2038
 find ../ -type f -name "*.go" -o -name "go.mod" |
-	xargs $SED -i "s#${CURRENT_PROJECT}#${NEW_PROJECT}#"
+    xargs $SED -i "s#${CURRENT_PROJECT}#${NEW_PROJECT}#"
 # shellcheck disable=SC2038
 find ../internal/cmd/ -type f -name "*.go" |
-	xargs $SED -i "s#${CURRENT_PROJECT_NAME}#${NEW_PROJECT_NAME}#"
+    xargs $SED -i "s#${CURRENT_PROJECT_NAME}#${NEW_PROJECT_NAME}#"
 
 # shellcheck disable=SC2038
-find ../ -type f -name "Makefile" \
-	-o -name "*.yaml" -o -name "*Dockerfile" |
-	xargs $SED -i "s#${CURRENT_PROJECT_NAME}#${NEW_PROJECT_NAME}#"
+find ../ -type f -name "Makefile" -o -name "*.yaml" -o -name "*Dockerfile" \
+    -o -name "*.sh" -o -name "*.ini" -o -name "*.service" -o -name "*.md" -o -name ".gitignore" |
+    xargs $SED -i "s#${CURRENT_PROJECT_NAME}#${NEW_PROJECT_NAME}#g"
 
 [[ "${NEW_PROJECT_NAME}" != "${CURRENT_PROJECT_NAME}" ]] && {
-	mv ../cmd/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api
-	mv ../cmd/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-cli
+    mv ../cmd/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api
+    mv ../cmd/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-cli
 
-	# shellcheck disable=SC2086
-	mv ../cmd/${NEW_PROJECT_NAME}-api/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api.go
-	# shellcheck disable=SC2086
-	mv ../cmd/${NEW_PROJECT_NAME}-cli/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-cli.go
+    # shellcheck disable=SC2086
+    mv ../cmd/${NEW_PROJECT_NAME}-api/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api.go
+    # shellcheck disable=SC2086
+    mv ../cmd/${NEW_PROJECT_NAME}-cli/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-cli.go
+
+    mv ../manifest/deploy/supervisor/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api.ini
+    mv ../manifest/deploy/supervisor/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api_test.ini
+
+    mv ../manifest/deploy/systemctl/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api.service
+    mv ../manifest/deploy/systemctl/{"${CURRENT_PROJECT_NAME}","${NEW_PROJECT_NAME}"}-api_test.service
 }
 
 exit 0
