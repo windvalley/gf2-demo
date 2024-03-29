@@ -75,8 +75,9 @@ var (
 			// 异步打印日志 & 显示打印错误的文件行号, 对访问日志无效
 			g.Log().SetFlags(glog.F_ASYNC | glog.F_TIME_STD | glog.F_FILE_LONG)
 
-			configFile := g.Cfg().GetAdapter()
-			g.Log().Debugf(ctx, "use config file: %+v", configFile)
+			//nolint:forcetypeassert
+			configFile := g.Cfg().GetAdapter().(*gcfg.AdapterFile).GetFileName()
+			g.Log().Debugf(ctx, "use config file: %s", configFile)
 
 			s := g.Server()
 			s.Use(

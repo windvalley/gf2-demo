@@ -72,9 +72,9 @@ var (
 			// 显示打印错误的文件行号
 			g.Log(consts.CliLoggerName).SetFlags(glog.F_TIME_STD | glog.F_FILE_LONG)
 
-			// 查看使用的配置文件是哪个
-			configFile := g.Cfg().GetAdapter()
-			g.Log(consts.CliLoggerName).Debugf(ctx, "use config file: %+v", configFile)
+			//nolint:forcetypeassert
+			configFile := g.Cfg().GetAdapter().(*gcfg.AdapterFile).GetFileName()
+			g.Log(consts.CliLoggerName).Debugf(ctx, "use config file: %s", configFile)
 
 			// ****************** 以下部分为业务逻辑
 
