@@ -151,7 +151,7 @@ linters-settings:
     # A comma-separated list of prefixes, which, if set, checks import paths
     # with the given prefixes are grouped after 3rd-party packages.
     # Default: ""
-    local-prefixes: gf2-demo
+    local-prefixes: github.com/windvalley/gf2-demo
 
   # An analyzer to detect magic numbers
   gomnd:

@@ -16,7 +16,10 @@
 #   $ gov -l
 #   $ gov -s 1.21
 
-GO_BIN_PATH="/usr/local/opt/go/bin"
+SHELL_RC_FILE=~/.zshrc
+GO_INSTALL_PATH="/usr/local/opt" # /usr/local/opt or /opt/homebrew/opt
+GO_PATH_LINK="$GO_INSTALL_PATH/go"
+GO_BIN_PATH="$GO_PATH_LINK/bin"
 
 show_go_versions() {
     echo "Current Go version: 
@@ -24,8 +27,7 @@ $(go version)
 
 Go versions installed on this system:"
 
-    # shellcheck disable=SC2125
-    go_list=$(ls -d /usr/local/opt/go@*)
+    go_list=$(ls -d $GO_INSTALL_PATH/go@*)
     for version in $go_list; do
         version=$(echo "$version" | grep -Eo "[0-9]+\.[0-9]+")
         echo "* $version"
@@ -40,15 +42,15 @@ switch_go_version() {
         return 1
     fi
 
-    if [[ ! -d "/usr/local/opt/go@$version" ]]; then
+    if [[ ! -d "$GO_INSTALL_PATH/go@$version" ]]; then
         echo -e "Error: Go version not found -- $version\n"
         show_go_versions
         return 1
     fi
 
     # Switch to the specified Go version.
-    unlink /usr/local/opt/go
-    ln -sf "/usr/local/opt/go@$version" /usr/local/opt/go
+    unlink "$GO_PATH_LINK" &>/dev/null
+    ln -sf "$GO_INSTALL_PATH/go@$version" "$GO_PATH_LINK"
 
     echo "Switched to Go version: $version"
 }
@@ -71,11 +73,12 @@ Example:
 
 # Make sure $GO_BIN_PATH is in $PATH.
 if ! echo "$PATH" | grep -q "$GO_BIN_PATH"; then
-    if ! grep -q "PATH=\"$GO_BIN_PATH:" ~/.zshrc; then
-        echo "export PATH=\"$GO_BIN_PATH:\$PATH\"" >>~/.zshrc
+    if ! grep -q "PATH=\"$GO_BIN_PATH:" "$SHELL_RC_FILE"; then
+        echo "export PATH=\"$GO_BIN_PATH:\$PATH\"" >>"$SHELL_RC_FILE"
     fi
 
-    echo "Warning: please execute 'omz reload' or 'exec zsh' first"
+    echo "Warning: please reload your shell rc file, i.e. 'source $SHELL_RC_FILE'"
+
     exit 1
 fi
 

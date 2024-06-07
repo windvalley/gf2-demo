@@ -17,8 +17,8 @@ CLI_NAME = gf2-demo-cli
 DEPLOY_NAME = ${APISERVER_NAME}
 DOCKER_NAME = ${APISERVER_NAME}
 
-APISERVER_PATH = cmd/gf2-demo-api/${APISERVER_NAME}.go
-CLI_PATH = cmd/gf2-demo-cli/${CLI_NAME}.go
+APISERVER_PATH = cmd/${APISERVER_NAME}/${APISERVER_NAME}.go
+CLI_PATH = cmd/${CLI_NAME}/${CLI_NAME}.go
 
 VERSION = $(shell git describe --tags --always --match='v*')
 
